@@ -37,6 +37,7 @@ gk_benchmark = "gokit.cli.aliases:benchmark_main"
 gk_cache = "gokit.cli.aliases:cache_main"
 gk_explain = "gokit.cli.aliases:explain_main"
 gk_plot = "gokit.cli.aliases:plot_main"
+gk_download = "gokit.cli.aliases:download_main"
 
 [tool.pytest.ini_options]
 addopts = "-q"

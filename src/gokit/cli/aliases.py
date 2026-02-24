@@ -36,3 +36,7 @@ def explain_main(argv: Sequence[str] | None = None) -> int:
 
 def plot_main(argv: Sequence[str] | None = None) -> int:
     return _run_with("plot", argv)
+
+
+def download_main(argv: Sequence[str] | None = None) -> int:
+    return _run_with("download", argv)

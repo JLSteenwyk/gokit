@@ -12,7 +12,7 @@ def register_parser(subparsers: argparse._SubParsersAction[argparse.ArgumentPars
     parser.add_argument("--study", required=True)
     parser.add_argument("--population", required=True)
     parser.add_argument("--assoc", required=True)
-    parser.add_argument("--obo", required=True)
+    parser.add_argument("--obo", default="go-basic.obo")
     parser.set_defaults(func=run)
 
 

@@ -39,7 +39,11 @@ def register_parser(subparsers: argparse._SubParsersAction[argparse.ArgumentPars
     parser.add_argument("--population", required=True, help="Population gene list file")
     parser.add_argument("--assoc", required=True, help="Association file")
     parser.add_argument("--assoc-format", default="auto", choices=["auto", "gaf", "gpad", "gene2go", "id2gos"])
-    parser.add_argument("--obo", required=True, help="Ontology OBO file")
+    parser.add_argument(
+        "--obo",
+        default="go-basic.obo",
+        help="Ontology OBO file (default: ./go-basic.obo)",
+    )
     parser.add_argument("--namespace", default="all", choices=["BP", "MF", "CC", "all"])
     parser.add_argument("--method", default="fdr_bh")
     parser.add_argument(

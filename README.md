@@ -24,35 +24,39 @@ pip install -e .[plot]
 - `gokit cache`
 - `gokit explain`
 - `gokit plot`
-- Shorthand aliases: `gk_enrich`, `gk_validate`, `gk_benchmark`, `gk_cache`, `gk_explain`, `gk_plot`
+- `gokit download`
+- Shorthand aliases: `gk_enrich`, `gk_validate`, `gk_benchmark`, `gk_cache`, `gk_explain`, `gk_plot`, `gk_download`
 
 ## Quick start
 
 ```bash
-gokit validate --study study.txt --population population.txt --assoc assoc.txt --obo go-basic.obo
+gokit download
+
+gokit validate --study study.txt --population population.txt --assoc assoc.txt
 
 gokit enrich \
   --study study.txt \
   --population population.txt \
   --assoc assoc.txt \
-  --obo go-basic.obo \
   --out results/goea
 ```
+
+`--obo` defaults to `./go-basic.obo`, and `--assoc-format` defaults to `auto`.
 
 Format-specific examples:
 
 ```bash
 # id2gos
-gokit enrich --study study.txt --population population.txt --assoc assoc.id2gos --assoc-format id2gos --obo go-basic.obo --out out/id2gos
+gokit enrich --study study.txt --population population.txt --assoc assoc.id2gos --assoc-format id2gos --out out/id2gos
 
 # GAF
-gokit enrich --study study.txt --population population.txt --assoc goa_human.gaf --assoc-format gaf --obo go-basic.obo --out out/gaf
+gokit enrich --study study.txt --population population.txt --assoc goa_human.gaf --assoc-format gaf --out out/gaf
 
 # GPAD
-gokit enrich --study study.txt --population population.txt --assoc goa_human.gpad --assoc-format gpad --obo go-basic.obo --out out/gpad
+gokit enrich --study study.txt --population population.txt --assoc goa_human.gpad --assoc-format gpad --out out/gpad
 
 # gene2go
-gokit enrich --study study.txt --population population.txt --assoc gene2go --assoc-format gene2go --id-type auto --obo go-basic.obo --out out/gene2go
+gokit enrich --study study.txt --population population.txt --assoc gene2go --assoc-format gene2go --id-type auto --out out/gene2go
 ```
 
 Batch mode:
@@ -63,7 +67,6 @@ gokit enrich \
   --population population.txt \
   --assoc assoc.txt \
   --assoc-format id2gos \
-  --obo go-basic.obo \
   --out results_batch \
   --out-formats tsv,jsonl \
   --compare-semantic \
@@ -72,6 +75,10 @@ gokit enrich \
   --semantic-namespace all \
   --semantic-min-padjsig 0.05
 ```
+
+Download command behavior is equivalent to:
+- `wget http://current.geneontology.org/ontology/go-basic.obo`
+- `wget http://current.geneontology.org/ontology/subsets/goslim_generic.obo`
 
 Figure generation:
 
