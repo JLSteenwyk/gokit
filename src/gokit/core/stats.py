@@ -65,3 +65,60 @@ def bh_adjust(pvalues: list[float]) -> list[float]:
         adjusted[idx] = min(max(running_min, 0.0), 1.0)
 
     return adjusted
+
+
+def _clip01(p: float) -> float:
+    return min(max(p, 0.0), 1.0)
+
+
+def bonferroni_adjust(pvalues: list[float]) -> list[float]:
+    m = len(pvalues)
+    if m == 0:
+        return []
+    return [_clip01(p * m) for p in pvalues]
+
+
+def holm_adjust(pvalues: list[float]) -> list[float]:
+    m = len(pvalues)
+    if m == 0:
+        return []
+
+    ranked = sorted(enumerate(pvalues), key=lambda x: x[1])
+    adjusted = [1.0] * m
+    running_max = 0.0
+    for rank, (idx, pval) in enumerate(ranked, start=1):
+        raw = (m - rank + 1) * pval
+        running_max = max(running_max, raw)
+        adjusted[idx] = _clip01(running_max)
+    return adjusted
+
+
+def by_adjust(pvalues: list[float]) -> list[float]:
+    m = len(pvalues)
+    if m == 0:
+        return []
+    c_m = sum(1.0 / k for k in range(1, m + 1))
+    ranked = sorted(enumerate(pvalues), key=lambda x: x[1])
+    adjusted = [1.0] * m
+    running_min = 1.0
+    for rank in range(m, 0, -1):
+        idx, pval = ranked[rank - 1]
+        raw = (pval * m * c_m) / rank
+        running_min = min(running_min, raw)
+        adjusted[idx] = _clip01(running_min)
+    return adjusted
+
+
+def adjust_pvalues(pvalues: list[float], method: str) -> list[float]:
+    m = method.lower()
+    if m == "fdr_bh":
+        return bh_adjust(pvalues)
+    if m == "fdr_by":
+        return by_adjust(pvalues)
+    if m == "bonferroni":
+        return bonferroni_adjust(pvalues)
+    if m == "holm":
+        return holm_adjust(pvalues)
+    if m in {"none", "raw"}:
+        return [_clip01(p) for p in pvalues]
+    raise ValueError(f"Unsupported multiple-testing method: {method}")

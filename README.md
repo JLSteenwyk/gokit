@@ -121,6 +121,12 @@ Current enrichment support:
   - `gene2go`
   - `auto` detection by extension/header
 - single-study ORA with Fisher exact testing + Benjamini-Hochberg correction
+- multiple-testing correction via `--method`:
+  - `fdr_bh` (default)
+  - `fdr_by`
+  - `bonferroni`
+  - `holm`
+  - `none`
 - directional testing for over/under enrichment:
   - `--test-direction both` (default)
   - `--test-direction over`

@@ -45,7 +45,12 @@ def register_parser(subparsers: argparse._SubParsersAction[argparse.ArgumentPars
         help="Ontology OBO file (default: ./go-basic.obo)",
     )
     parser.add_argument("--namespace", default="all", choices=["BP", "MF", "CC", "all"])
-    parser.add_argument("--method", default="fdr_bh")
+    parser.add_argument(
+        "--method",
+        default="fdr_bh",
+        choices=["fdr_bh", "fdr_by", "bonferroni", "holm", "none"],
+        help="Multiple-testing correction method",
+    )
     parser.add_argument(
         "--test-direction",
         default="both",
@@ -173,6 +178,7 @@ def run(args: argparse.Namespace) -> int:
             results = runner.run_study(
                 study_genes=study_genes,
                 namespace_filter=args.namespace,
+                method=args.method,
                 test_direction=args.test_direction,
                 store_items=(args.store_items == "always"),
             )
@@ -187,6 +193,7 @@ def run(args: argparse.Namespace) -> int:
                 rows = runner.run_study(
                     study_genes=study_genes,
                     namespace_filter=args.namespace,
+                    method=args.method,
                     test_direction=args.test_direction,
                     store_items=(args.store_items == "always"),
                 )

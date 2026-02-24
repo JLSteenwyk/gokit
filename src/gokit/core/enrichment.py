@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections import defaultdict
 from dataclasses import dataclass
 
-from gokit.core.stats import bh_adjust, fisher_left_tail, fisher_right_tail
+from gokit.core.stats import adjust_pvalues, fisher_left_tail, fisher_right_tail
 
 
 @dataclass
@@ -63,6 +63,7 @@ class OraRunner:
         *,
         study_genes: set[str],
         namespace_filter: str,
+        method: str = "fdr_bh",
         test_direction: str = "both",
         store_items: bool = False,
     ) -> list[EnrichmentResult]:
@@ -156,7 +157,7 @@ class OraRunner:
             )
             pvals.append(p_unc)
 
-        padj = bh_adjust(pvals)
+        padj = adjust_pvalues(pvals, method)
         results: list[EnrichmentResult] = []
         for idx, row in enumerate(rows):
             goid, ns, direction, st_cnt, st_n, pop_cnt, pop_n, p_unc = row
@@ -186,6 +187,7 @@ def run_ora(
     gene_to_go: dict[str, set[str]],
     go_to_namespace: dict[str, str],
     namespace_filter: str,
+    method: str = "fdr_bh",
     test_direction: str = "both",
     store_items: bool = False,
 ) -> list[EnrichmentResult]:
@@ -198,6 +200,7 @@ def run_ora(
     return runner.run_study(
         study_genes=study_genes,
         namespace_filter=namespace_filter,
+        method=method,
         test_direction=test_direction,
         store_items=store_items,
     )
