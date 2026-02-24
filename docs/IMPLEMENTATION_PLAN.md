@@ -42,3 +42,8 @@ This plan tracks implementation of v1 only. Item 10 (post-v1 roadmap) was intent
 - `gokit enrich` computes real enriched GO terms for `id2gos` input in v1 path.
 - Output ordering is deterministic across repeated runs.
 - Manifest contains reproducibility metadata for every run.
+
+## v0.1.1 Increment (In Progress)
+- [x] Add `gaf`, `gpad`, `gene2go` association readers
+- [x] Add `auto` format detection for association files
+- [x] Add parser and CLI integration tests for new formats

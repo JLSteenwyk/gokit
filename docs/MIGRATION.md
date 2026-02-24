@@ -11,6 +11,13 @@ Legacy (example):
 `gokit`:
 - `gokit enrich --study study.txt --population population.txt --assoc association.txt --assoc-format id2gos --obo go-basic.obo --out results/goea`
 
+Supported association formats in `gokit`:
+- `id2gos`
+- `gaf`
+- `gpad`
+- `gene2go`
+- `auto` (detected from extension/header/content)
+
 ## Batch enrichment
 Legacy:
 - loop over multiple study files manually

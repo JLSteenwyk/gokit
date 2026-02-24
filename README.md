@@ -53,7 +53,12 @@ gokit enrich \
 Current status: single-study enrichment is implemented for `id2gos`; broader format support and performance phases are in progress.
 
 Current enrichment support:
-- `id2gos` associations (`--assoc-format id2gos` or `auto`)
+- association formats:
+  - `id2gos`
+  - `gaf`
+  - `gpad`
+  - `gene2go`
+  - `auto` detection by extension/header
 - single-study ORA with Fisher right-tail + Benjamini-Hochberg correction
 - deterministic TSV/JSONL output ordering
 - batch mode via `--studies` with per-study + combined outputs
