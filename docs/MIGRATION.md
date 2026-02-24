@@ -18,6 +18,11 @@ Supported association formats in `gokit`:
 - `gene2go`
 - `auto` (detected from extension/header/content)
 
+ID handling:
+- Use `--id-type auto` to infer string vs integer-style IDs by overlap.
+- Use `--id-type int` to normalize leading-zero IDs (e.g., `00101` -> `101`).
+- Use `--id-type str` for strict string matching.
+
 ## Batch enrichment
 Legacy:
 - loop over multiple study files manually

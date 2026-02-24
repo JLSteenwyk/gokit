@@ -47,3 +47,4 @@ This plan tracks implementation of v1 only. Item 10 (post-v1 roadmap) was intent
 - [x] Add `gaf`, `gpad`, `gene2go` association readers
 - [x] Add `auto` format detection for association files
 - [x] Add parser and CLI integration tests for new formats
+- [x] Add `--id-type {auto,str,int}` normalization and mixed-ID coverage tests

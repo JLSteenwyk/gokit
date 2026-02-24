@@ -61,6 +61,10 @@ Current enrichment support:
   - `auto` detection by extension/header
 - single-study ORA with Fisher right-tail + Benjamini-Hochberg correction
 - deterministic TSV/JSONL output ordering
+- ID normalization control:
+  - `--id-type auto` (default, overlap-based inference)
+  - `--id-type str`
+  - `--id-type int` (normalizes numeric IDs like `00101` -> `101`)
 - batch mode via `--studies` with per-study + combined outputs
 - grouped summaries:
   - single-study: `<out>.summary.tsv`

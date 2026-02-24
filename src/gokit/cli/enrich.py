@@ -8,6 +8,7 @@ from pathlib import Path
 from gokit.cache.obo_cache import default_cache_dir, load_or_build_obo_cache
 from gokit.cli.common import parse_csv_list, require_existing_file
 from gokit.core.enrichment import EnrichmentResult, OraRunner
+from gokit.core.idnorm import infer_id_mode, normalize_assoc_keys, normalize_gene_set
 from gokit.core.manifest import build_input_files, default_manifest, write_manifest
 from gokit.core.propagation import propagate_gene_to_go
 from gokit.core.semantic import StudyTermSet, pairwise_semantic_similarity
@@ -40,6 +41,12 @@ def register_parser(subparsers: argparse._SubParsersAction[argparse.ArgumentPars
     parser.add_argument("--obo", required=True, help="Ontology OBO file")
     parser.add_argument("--namespace", default="all", choices=["BP", "MF", "CC", "all"])
     parser.add_argument("--method", default="fdr_bh")
+    parser.add_argument(
+        "--id-type",
+        default="auto",
+        choices=["auto", "str", "int"],
+        help="Gene ID normalization mode for study/population/association keys",
+    )
     parser.add_argument("--alpha", type=float, default=0.05)
     parser.add_argument("--seed", type=int, default=None)
     parser.add_argument("--fdr-resamples", type=int, default=0)
@@ -109,8 +116,13 @@ def run(args: argparse.Namespace) -> int:
         top_pairs: dict[tuple[str, str], list[tuple[str, str, float]]] = {}
         study_ids: list[str] = []
     else:
-        pop_genes = read_gene_set(population)
-        gene_to_go = read_associations(assoc, args.assoc_format)
+        pop_genes_raw = read_gene_set(population)
+        gene_to_go_raw = read_associations(assoc, args.assoc_format)
+
+        id_mode = args.id_type if args.id_type != "auto" else infer_id_mode(pop_genes_raw, set(gene_to_go_raw))
+        pop_genes = normalize_gene_set(pop_genes_raw, id_mode)
+        gene_to_go = normalize_assoc_keys(gene_to_go_raw, id_mode)
+
         obo_cached = load_or_build_obo_cache(obo, Path(args.cache_dir))
         obo_meta = obo_cached.meta
 
@@ -130,7 +142,7 @@ def run(args: argparse.Namespace) -> int:
         study_ids: list[str] = []
 
         if study_path:
-            study_genes = read_gene_set(study_path)
+            study_genes = normalize_gene_set(read_gene_set(study_path), id_mode)
             results = runner.run_study(
                 study_genes=study_genes,
                 namespace_filter=args.namespace,
@@ -143,7 +155,7 @@ def run(args: argparse.Namespace) -> int:
             termsets: list[StudyTermSet] = []
             for study_id, file_path in studies:
                 path = require_existing_file(str(file_path), f"study({study_id})")
-                study_genes = read_gene_set(path)
+                study_genes = normalize_gene_set(read_gene_set(path), id_mode)
                 rows = runner.run_study(
                     study_genes=study_genes,
                     namespace_filter=args.namespace,
@@ -172,7 +184,8 @@ def run(args: argparse.Namespace) -> int:
             f"propagate={not args.no_propagate_counts}; "
             f"batch={bool(args.studies)}; "
             f"semantic_compared={bool(pairwise)}; "
-            f"semantic_metric={args.semantic_metric if args.compare_semantic else 'na'}."
+            f"semantic_metric={args.semantic_metric if args.compare_semantic else 'na'}; "
+            f"id_type={id_mode}."
         )
 
     manifest = default_manifest(
