@@ -1,2 +1,3 @@
-{"go_id": "GO:0000003", "namespace": "MF", "p_adjusted": 0.3333333333333333, "p_uncorrected": 0.16666666666666666, "pop_count": 2, "pop_n": 4, "study_count": 2, "study_n": 2}
-{"go_id": "GO:0000001", "namespace": "BP", "p_adjusted": 1.0, "p_uncorrected": 1.0, "pop_count": 4, "pop_n": 4, "study_count": 2, "study_n": 2}
+{"direction": "over", "go_id": "GO:0000003", "namespace": "MF", "p_adjusted": 0.25, "p_uncorrected": 0.16666666666666666, "pop_count": 2, "pop_n": 4, "study_count": 2, "study_n": 2}
+{"direction": "under", "go_id": "GO:0000002", "namespace": "BP", "p_adjusted": 0.25, "p_uncorrected": 0.16666666666666666, "pop_count": 2, "pop_n": 4, "study_count": 0, "study_n": 2}
+{"direction": "over", "go_id": "GO:0000001", "namespace": "BP", "p_adjusted": 1.0, "p_uncorrected": 1.0, "pop_count": 4, "pop_n": 4, "study_count": 2, "study_n": 2}

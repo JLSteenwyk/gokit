@@ -1,3 +1,4 @@
-GO	NS	study_count	study_n	pop_count	pop_n	p_uncorrected	p_adjusted
-GO:0000001	BP	2	2	2	4	0.166667	0.166667
-GO:0000002	BP	2	2	2	4	0.166667	0.166667
+GO	NS	direction	study_count	study_n	pop_count	pop_n	p_uncorrected	p_adjusted
+GO:0000001	BP	over	2	2	2	4	0.166667	0.166667
+GO:0000002	BP	over	2	2	2	4	0.166667	0.166667
+GO:0000003	MF	under	0	2	2	4	0.166667	0.166667

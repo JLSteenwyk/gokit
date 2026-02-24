@@ -17,8 +17,12 @@ build/
 
 # Local benchmark outputs
 benchmark_results/
+audit_results/
 
 # Large ontology files (local only)
 go-basic.obo
 goslim_generic.obo
 *.obo
+
+# Local audit runner script
+audit.sh

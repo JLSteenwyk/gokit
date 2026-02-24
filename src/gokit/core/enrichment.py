@@ -5,13 +5,14 @@ from __future__ import annotations
 from collections import defaultdict
 from dataclasses import dataclass
 
-from gokit.core.stats import bh_adjust, fisher_right_tail
+from gokit.core.stats import bh_adjust, fisher_left_tail, fisher_right_tail
 
 
 @dataclass
 class EnrichmentResult:
     go_id: str
     namespace: str
+    direction: str
     study_count: int
     study_n: int
     pop_count: int
@@ -58,8 +59,16 @@ class OraRunner:
         return {goid: len(genes) for goid, genes in go_to_pop_genes.items()}
 
     def run_study(
-        self, *, study_genes: set[str], namespace_filter: str, store_items: bool = False
+        self,
+        *,
+        study_genes: set[str],
+        namespace_filter: str,
+        test_direction: str = "both",
+        store_items: bool = False,
     ) -> list[EnrichmentResult]:
+        if test_direction not in {"over", "under", "both"}:
+            raise ValueError(f"Unsupported test_direction: {test_direction}")
+
         study = set(study_genes).intersection(self.population_genes)
         go_to_study_count: dict[str, int] = defaultdict(int)
         go_to_study_items: dict[str, set[str]] = defaultdict(set)
@@ -76,12 +85,19 @@ class OraRunner:
                 if store_items:
                     go_to_study_items[goid].add(gene)
 
-        rows: list[tuple[str, str, int, int, int, int, float]] = []
+        rows: list[tuple[str, str, str, int, int, int, int, float]] = []
         pvals: list[float] = []
 
-        for goid, study_count in go_to_study_count.items():
-            if study_count <= 0:
-                continue
+        candidate_goids: set[str]
+        if test_direction == "over":
+            candidate_goids = set(go_to_study_count)
+        else:
+            candidate_goids = set(self.go_to_pop_count)
+
+        pop_n = len(self.population_genes)
+        study_n = len(study)
+        for goid in candidate_goids:
+            study_count = go_to_study_count.get(goid, 0)
             pop_count = self.go_to_pop_count.get(goid, 0)
             if pop_count <= 0:
                 continue
@@ -90,20 +106,51 @@ class OraRunner:
             if namespace_filter != "all" and ns != namespace_filter:
                 continue
 
-            p_unc = fisher_right_tail(
-                pop_n=len(self.population_genes),
-                pop_count=pop_count,
-                study_n=len(study),
-                study_count=study_count,
-            )
+            if test_direction == "over":
+                if study_count <= 0:
+                    continue
+                direction = "over"
+                p_unc = fisher_right_tail(
+                    pop_n=pop_n,
+                    pop_count=pop_count,
+                    study_n=study_n,
+                    study_count=study_count,
+                )
+            elif test_direction == "under":
+                direction = "under"
+                p_unc = fisher_left_tail(
+                    pop_n=pop_n,
+                    pop_count=pop_count,
+                    study_n=study_n,
+                    study_count=study_count,
+                )
+            else:
+                expected = (study_n * pop_count / pop_n) if pop_n > 0 else 0.0
+                if study_count >= expected:
+                    direction = "over"
+                    p_unc = fisher_right_tail(
+                        pop_n=pop_n,
+                        pop_count=pop_count,
+                        study_n=study_n,
+                        study_count=study_count,
+                    )
+                else:
+                    direction = "under"
+                    p_unc = fisher_left_tail(
+                        pop_n=pop_n,
+                        pop_count=pop_count,
+                        study_n=study_n,
+                        study_count=study_count,
+                    )
             rows.append(
                 (
                     goid,
                     ns,
+                    direction,
                     study_count,
-                    len(study),
+                    study_n,
                     pop_count,
-                    len(self.population_genes),
+                    pop_n,
                     p_unc,
                 )
             )
@@ -112,11 +159,12 @@ class OraRunner:
         padj = bh_adjust(pvals)
         results: list[EnrichmentResult] = []
         for idx, row in enumerate(rows):
-            goid, ns, st_cnt, st_n, pop_cnt, pop_n, p_unc = row
+            goid, ns, direction, st_cnt, st_n, pop_cnt, pop_n, p_unc = row
             results.append(
                 EnrichmentResult(
                     go_id=goid,
                     namespace=ns,
+                    direction=direction,
                     study_count=st_cnt,
                     study_n=st_n,
                     pop_count=pop_cnt,
@@ -127,7 +175,7 @@ class OraRunner:
                     pop_items=(go_to_pop_items.get(goid, set()) if store_items and go_to_pop_items else None),
                 )
             )
-        results.sort(key=lambda r: (r.p_adjusted, r.p_uncorrected, r.go_id))
+        results.sort(key=lambda r: (r.p_adjusted, r.p_uncorrected, r.direction, r.go_id))
         return results
 
 
@@ -138,6 +186,7 @@ def run_ora(
     gene_to_go: dict[str, set[str]],
     go_to_namespace: dict[str, str],
     namespace_filter: str,
+    test_direction: str = "both",
     store_items: bool = False,
 ) -> list[EnrichmentResult]:
     """Convenience wrapper for one-off runs."""
@@ -147,5 +196,8 @@ def run_ora(
         go_to_namespace=go_to_namespace,
     )
     return runner.run_study(
-        study_genes=study_genes, namespace_filter=namespace_filter, store_items=store_items
+        study_genes=study_genes,
+        namespace_filter=namespace_filter,
+        test_direction=test_direction,
+        store_items=store_items,
     )

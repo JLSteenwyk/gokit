@@ -1,4 +1,5 @@
 study_id	namespace	total_terms	significant_terms	alpha
 study_a	BP	2	0	0.05
-study_b	BP	1	0	0.05
+study_a	MF	1	0	0.05
+study_b	BP	2	0	0.05
 study_b	MF	1	0	0.05

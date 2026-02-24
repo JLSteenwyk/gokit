@@ -43,6 +43,12 @@ def register_parser(subparsers: argparse._SubParsersAction[argparse.ArgumentPars
     parser.add_argument("--namespace", default="all", choices=["BP", "MF", "CC", "all"])
     parser.add_argument("--method", default="fdr_bh")
     parser.add_argument(
+        "--test-direction",
+        default="both",
+        choices=["over", "under", "both"],
+        help="Enrichment direction to test (default: both over- and under-enrichment)",
+    )
+    parser.add_argument(
         "--id-type",
         default="auto",
         choices=["auto", "str", "int"],
@@ -163,6 +169,7 @@ def run(args: argparse.Namespace) -> int:
             results = runner.run_study(
                 study_genes=study_genes,
                 namespace_filter=args.namespace,
+                test_direction=args.test_direction,
                 store_items=(args.store_items == "always"),
             )
             combined_rows = [("study", r) for r in results]
@@ -176,10 +183,11 @@ def run(args: argparse.Namespace) -> int:
                 rows = runner.run_study(
                     study_genes=study_genes,
                     namespace_filter=args.namespace,
+                    test_direction=args.test_direction,
                     store_items=(args.store_items == "always"),
                 )
                 combined_rows.extend((study_id, row) for row in rows)
-                rows_sem = rows
+                rows_sem = [r for r in rows if r.direction == "over"]
                 if args.semantic_namespace != "all":
                     rows_sem = [r for r in rows_sem if r.namespace == args.semantic_namespace]
                 if args.semantic_min_padjsig is not None:
@@ -214,7 +222,7 @@ def run(args: argparse.Namespace) -> int:
                     )
 
         notes = (
-            f"Computed {len(results)} enriched GO rows; "
+            f"Computed {len(results)} GO rows; "
             f"obo_format={obo_meta.format_version or 'na'}; "
             f"obo_data={obo_meta.data_version or 'na'}; "
             f"cache_hit={obo_cached.cache_hit}; "
@@ -225,6 +233,7 @@ def run(args: argparse.Namespace) -> int:
             f"semantic_namespace={args.semantic_namespace if args.compare_semantic else 'na'}; "
             f"semantic_min_padjsig={args.semantic_min_padjsig if args.compare_semantic else 'na'}; "
             f"semantic_warning={semantic_warning or 'none'}; "
+            f"test_direction={args.test_direction}; "
             f"id_type={id_mode}."
         )
 

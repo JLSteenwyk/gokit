@@ -77,4 +77,7 @@ def test_enrich_outputs_rows(tmp_path: Path) -> None:
     assert tsv.exists()
     lines = tsv.read_text(encoding="utf-8").strip().splitlines()
     assert len(lines) >= 2
-    assert lines[0].startswith("GO\tNS\t")
+    assert lines[0].startswith("GO\tNS\tdirection\t")
+    body = "\n".join(lines[1:])
+    assert "\tover\t" in body
+    assert "\tunder\t" in body

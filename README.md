@@ -77,7 +77,11 @@ Current enrichment support:
   - `gpad`
   - `gene2go`
   - `auto` detection by extension/header
-- single-study ORA with Fisher right-tail + Benjamini-Hochberg correction
+- single-study ORA with Fisher exact testing + Benjamini-Hochberg correction
+- directional testing for over/under enrichment:
+  - `--test-direction both` (default)
+  - `--test-direction over`
+  - `--test-direction under`
 - deterministic TSV/JSONL output ordering
 - ID normalization control:
   - `--id-type auto` (default, overlap-based inference)

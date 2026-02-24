@@ -13,7 +13,7 @@ def write_tsv(path: Path, results: list[EnrichmentResult]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8") as handle:
         handle.write(
-            "GO\tNS\tstudy_count\tstudy_n\tpop_count\tpop_n\tp_uncorrected\tp_adjusted\n"
+            "GO\tNS\tdirection\tstudy_count\tstudy_n\tpop_count\tpop_n\tp_uncorrected\tp_adjusted\n"
         )
         for row in results:
             handle.write(
@@ -21,6 +21,7 @@ def write_tsv(path: Path, results: list[EnrichmentResult]) -> None:
                     [
                         row.go_id,
                         row.namespace,
+                        row.direction,
                         str(row.study_count),
                         str(row.study_n),
                         str(row.pop_count),
@@ -40,6 +41,7 @@ def write_jsonl(path: Path, results: list[EnrichmentResult]) -> None:
             payload = {
                 "go_id": row.go_id,
                 "namespace": row.namespace,
+                "direction": row.direction,
                 "study_count": row.study_count,
                 "study_n": row.study_n,
                 "pop_count": row.pop_count,
@@ -58,7 +60,7 @@ def write_combined_tsv(path: Path, rows: list[tuple[str, EnrichmentResult]]) -> 
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8") as handle:
         handle.write(
-            "study_id\tGO\tNS\tstudy_count\tstudy_n\tpop_count\tpop_n\tp_uncorrected\tp_adjusted\n"
+            "study_id\tGO\tNS\tdirection\tstudy_count\tstudy_n\tpop_count\tpop_n\tp_uncorrected\tp_adjusted\n"
         )
         for study_id, row in rows:
             handle.write(
@@ -67,6 +69,7 @@ def write_combined_tsv(path: Path, rows: list[tuple[str, EnrichmentResult]]) -> 
                         study_id,
                         row.go_id,
                         row.namespace,
+                        row.direction,
                         str(row.study_count),
                         str(row.study_n),
                         str(row.pop_count),
@@ -87,6 +90,7 @@ def write_combined_jsonl(path: Path, rows: list[tuple[str, EnrichmentResult]]) -
                 "study_id": study_id,
                 "go_id": row.go_id,
                 "namespace": row.namespace,
+                "direction": row.direction,
                 "study_count": row.study_count,
                 "study_n": row.study_n,
                 "pop_count": row.pop_count,

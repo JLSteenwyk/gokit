@@ -25,6 +25,7 @@ def write_results_parquet(path: Path, results: list[EnrichmentResult]) -> None:
     payload = {
         "go_id": [r.go_id for r in results],
         "namespace": [r.namespace for r in results],
+        "direction": [r.direction for r in results],
         "study_count": [r.study_count for r in results],
         "study_n": [r.study_n for r in results],
         "pop_count": [r.pop_count for r in results],
@@ -45,6 +46,7 @@ def write_combined_parquet(path: Path, rows: list[tuple[str, EnrichmentResult]])
         "study_id": [sid for sid, _ in rows],
         "go_id": [r.go_id for _, r in rows],
         "namespace": [r.namespace for _, r in rows],
+        "direction": [r.direction for _, r in rows],
         "study_count": [r.study_count for _, r in rows],
         "study_n": [r.study_n for _, r in rows],
         "pop_count": [r.pop_count for _, r in rows],
