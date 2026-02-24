@@ -25,7 +25,8 @@ pip install -e .[plot]
 - `gokit explain`
 - `gokit plot`
 - `gokit download`
-- Shorthand aliases: `gk_enrich`, `gk_validate`, `gk_benchmark`, `gk_cache`, `gk_explain`, `gk_plot`, `gk_download`
+- `gokit report`
+- Shorthand aliases: `gk_enrich`, `gk_validate`, `gk_benchmark`, `gk_cache`, `gk_explain`, `gk_plot`, `gk_download`, `gk_report`
 
 ## Quick start
 
@@ -39,6 +40,8 @@ gokit enrich \
   --population population.txt \
   --assoc assoc.txt \
   --out results/goea
+
+gokit report --run results/goea
 ```
 
 `--obo` defaults to `./go-basic.obo`, and `--assoc-format` defaults to `auto`.
@@ -105,6 +108,16 @@ gokit plot \
   --min-similarity 0.25 \
   --max-edges 40 \
   --out figures/semantic_network.png
+
+# optional: have enrich auto-emit plots
+gokit enrich \
+  --studies studies.tsv \
+  --population population.txt \
+  --assoc assoc.txt \
+  --out results_batch \
+  --compare-semantic \
+  --emit-plots term-bar,direction-summary,semantic-network \
+  --plot-format png
 ```
 
 `studies.tsv` supports:
@@ -140,6 +153,9 @@ Current enrichment support:
 - grouped summaries:
   - single-study: `<out>.summary.tsv`
   - batch: `grouped_summary.tsv` + per-study `*.summary.tsv`
+  - includes direction-aware fields:
+    - `over_terms`, `under_terms`
+    - `over_significant_terms`, `under_significant_terms`
 - parquet output via `--out-formats parquet` (requires optional dependency):
   - `pip install 'gokit[io]'`
 - ontology-aware cross-study similarity matrix (`--compare-semantic`) with metrics:
@@ -153,6 +169,8 @@ Current enrichment support:
   - `term-bar`: top terms by `-log10(p_adjusted)` colored by direction
   - `direction-summary`: significant over/under counts by namespace
   - `semantic-network`: cross-study graph from `semantic_similarity.tsv`
+- optional auto-plot emission in `gokit enrich` via `--emit-plots`
+- consolidated markdown report via `gokit report --run <output-prefix-or-dir>`
 - semantic pre-filters:
   - `--semantic-namespace {BP,MF,CC,all}`
   - `--semantic-min-padjsig FLOAT`

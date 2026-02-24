@@ -155,11 +155,21 @@ def write_grouped_summary_single(path: Path, results: list[EnrichmentResult], al
 
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8") as handle:
-        handle.write("namespace\ttotal_terms\tsignificant_terms\talpha\n")
+        handle.write(
+            "namespace\ttotal_terms\tover_terms\tunder_terms\t"
+            "significant_terms\tover_significant_terms\tunder_significant_terms\talpha\n"
+        )
         for ns in sorted(by_ns):
             rows = by_ns[ns]
             sig = sum(1 for r in rows if r.p_adjusted <= alpha)
-            handle.write(f"{ns}\t{len(rows)}\t{sig}\t{alpha}\n")
+            over = sum(1 for r in rows if r.direction == "over")
+            under = sum(1 for r in rows if r.direction == "under")
+            over_sig = sum(1 for r in rows if r.direction == "over" and r.p_adjusted <= alpha)
+            under_sig = sum(1 for r in rows if r.direction == "under" and r.p_adjusted <= alpha)
+            handle.write(
+                f"{ns}\t{len(rows)}\t{over}\t{under}\t"
+                f"{sig}\t{over_sig}\t{under_sig}\t{alpha}\n"
+            )
 
 
 def write_grouped_summary_batch(
@@ -173,8 +183,18 @@ def write_grouped_summary_batch(
 
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8") as handle:
-        handle.write("study_id\tnamespace\ttotal_terms\tsignificant_terms\talpha\n")
+        handle.write(
+            "study_id\tnamespace\ttotal_terms\tover_terms\tunder_terms\t"
+            "significant_terms\tover_significant_terms\tunder_significant_terms\talpha\n"
+        )
         for (study_id, ns) in sorted(grouped):
             vals = grouped[(study_id, ns)]
             sig = sum(1 for r in vals if r.p_adjusted <= alpha)
-            handle.write(f"{study_id}\t{ns}\t{len(vals)}\t{sig}\t{alpha}\n")
+            over = sum(1 for r in vals if r.direction == "over")
+            under = sum(1 for r in vals if r.direction == "under")
+            over_sig = sum(1 for r in vals if r.direction == "over" and r.p_adjusted <= alpha)
+            under_sig = sum(1 for r in vals if r.direction == "under" and r.p_adjusted <= alpha)
+            handle.write(
+                f"{study_id}\t{ns}\t{len(vals)}\t{over}\t{under}\t"
+                f"{sig}\t{over_sig}\t{under_sig}\t{alpha}\n"
+            )

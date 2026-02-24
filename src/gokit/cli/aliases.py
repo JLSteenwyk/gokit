@@ -40,3 +40,7 @@ def plot_main(argv: Sequence[str] | None = None) -> int:
 
 def download_main(argv: Sequence[str] | None = None) -> int:
     return _run_with("download", argv)
+
+
+def report_main(argv: Sequence[str] | None = None) -> int:
+    return _run_with("report", argv)

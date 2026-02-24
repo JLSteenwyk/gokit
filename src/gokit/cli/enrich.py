@@ -28,6 +28,106 @@ from gokit.report.writers import (
 from gokit.report.parquet_writer import write_combined_parquet, write_results_parquet
 
 
+def _emit_plots(
+    *,
+    plot_kinds: list[str],
+    plot_dir: Path,
+    plot_format: str,
+    plot_top_n: int,
+    plot_alpha: float,
+    plot_min_similarity: float,
+    plot_max_edges: int,
+    study_ids: list[str],
+    combined_rows: list[tuple[str, EnrichmentResult]],
+    pairwise: dict[tuple[str, str], float],
+    is_batch: bool,
+    out_prefix: Path,
+) -> None:
+    if not plot_kinds:
+        return
+
+    from gokit.report.figures import PlotRow, render_direction_summary, render_semantic_network, render_term_bar
+
+    plot_dir.mkdir(parents=True, exist_ok=True)
+    plot_rows = [
+        PlotRow(
+            go_id=row.go_id,
+            namespace=row.namespace,
+            direction=row.direction,
+            p_adjusted=row.p_adjusted,
+            study_id=study_id,
+        )
+        for study_id, row in combined_rows
+    ]
+
+    if is_batch:
+        ids = study_ids
+    else:
+        ids = ["study"]
+
+    if "term-bar" in plot_kinds:
+        if is_batch:
+            for sid in ids:
+                rows = [r for r in plot_rows if r.study_id == sid]
+                if rows:
+                    try:
+                        render_term_bar(
+                            rows,
+                            out=plot_dir / f"{sid}.term_bar.{plot_format}",
+                            top_n=plot_top_n,
+                            title=f"{sid}: Top GO Signals",
+                        )
+                    except ValueError as exc:
+                        print(f"WARNING: skipped term-bar for {sid}: {exc}")
+        else:
+            try:
+                render_term_bar(
+                    plot_rows,
+                    out=plot_dir / f"{out_prefix.name}.term_bar.{plot_format}",
+                    top_n=plot_top_n,
+                    title="Top GO Signals",
+                )
+            except ValueError as exc:
+                print(f"WARNING: skipped term-bar: {exc}")
+
+    if "direction-summary" in plot_kinds:
+        if is_batch:
+            for sid in ids:
+                rows = [r for r in plot_rows if r.study_id == sid]
+                if rows:
+                    try:
+                        render_direction_summary(
+                            rows,
+                            out=plot_dir / f"{sid}.direction_summary.{plot_format}",
+                            alpha=plot_alpha,
+                            title=f"{sid}: Directional GO Summary",
+                        )
+                    except ValueError as exc:
+                        print(f"WARNING: skipped direction-summary for {sid}: {exc}")
+        else:
+            try:
+                render_direction_summary(
+                    plot_rows,
+                    out=plot_dir / f"{out_prefix.name}.direction_summary.{plot_format}",
+                    alpha=plot_alpha,
+                    title="Directional GO Summary",
+                )
+            except ValueError as exc:
+                print(f"WARNING: skipped direction-summary: {exc}")
+
+    if "semantic-network" in plot_kinds and is_batch and pairwise:
+        try:
+            render_semantic_network(
+                ids,
+                pairwise,
+                out=plot_dir / f"semantic_network.{plot_format}",
+                min_similarity=plot_min_similarity,
+                max_edges=plot_max_edges,
+            )
+        except ValueError as exc:
+            print(f"WARNING: skipped semantic-network: {exc}")
+
+
 def register_parser(subparsers: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
     parser = subparsers.add_parser("enrich", help="Run GO enrichment analysis")
     parser.add_argument("--study", default="", help="Study gene list file")
@@ -106,6 +206,17 @@ def register_parser(subparsers: argparse._SubParsersAction[argparse.ArgumentPars
         help="Namespace filter applied before semantic comparison",
     )
     parser.add_argument("--manifest", default="", help="Optional manifest output path")
+    parser.add_argument(
+        "--emit-plots",
+        default="",
+        help="Comma-separated plot kinds to emit after enrichment (term-bar,direction-summary,semantic-network)",
+    )
+    parser.add_argument("--plot-dir", default="", help="Optional output directory for emitted plots")
+    parser.add_argument("--plot-format", default="png", choices=["png", "svg", "pdf"])
+    parser.add_argument("--plot-top-n", type=int, default=20)
+    parser.add_argument("--plot-alpha", type=float, default=0.05)
+    parser.add_argument("--plot-min-similarity", type=float, default=0.2)
+    parser.add_argument("--plot-max-edges", type=int, default=100)
     parser.add_argument("--dry-run", action="store_true", help="Validate and emit manifest only")
     parser.set_defaults(func=run)
 
@@ -122,6 +233,11 @@ def run(args: argparse.Namespace) -> int:
 
     relationships = parse_csv_list(args.relationships)
     out_formats = parse_csv_list(args.out_formats)
+    plot_kinds = parse_csv_list(args.emit_plots)
+    allowed_plots = {"term-bar", "direction-summary", "semantic-network"}
+    invalid_plots = [p for p in plot_kinds if p not in allowed_plots]
+    if invalid_plots:
+        raise ValueError(f"Unsupported plot kind(s): {','.join(invalid_plots)}")
     out_prefix = Path(args.out)
 
     manifest_path = Path(args.manifest) if args.manifest else out_prefix.with_suffix(".manifest.json")
@@ -244,6 +360,7 @@ def run(args: argparse.Namespace) -> int:
             f"semantic_namespace={args.semantic_namespace if args.compare_semantic else 'na'}; "
             f"semantic_min_padjsig={args.semantic_min_padjsig if args.compare_semantic else 'na'}; "
             f"semantic_warning={semantic_warning or 'none'}; "
+            f"emit_plots={','.join(plot_kinds) if plot_kinds else 'none'}; "
             f"test_direction={args.test_direction}; "
             f"id_type={id_mode}."
         )
@@ -318,6 +435,33 @@ def run(args: argparse.Namespace) -> int:
                 )
             elif args.compare_semantic and semantic_warning:
                 print(f"WARNING: {semantic_warning}")
+
+        if plot_kinds:
+            if args.plot_dir:
+                plot_dir = Path(args.plot_dir)
+            elif args.study:
+                plot_dir = out_prefix.parent / "figures"
+            else:
+                plot_dir = out_prefix / "figures"
+            try:
+                _emit_plots(
+                    plot_kinds=plot_kinds,
+                    plot_dir=plot_dir,
+                    plot_format=args.plot_format,
+                    plot_top_n=args.plot_top_n,
+                    plot_alpha=args.plot_alpha,
+                    plot_min_similarity=args.plot_min_similarity,
+                    plot_max_edges=args.plot_max_edges,
+                    study_ids=study_ids,
+                    combined_rows=combined_rows,
+                    pairwise=pairwise,
+                    is_batch=bool(args.studies),
+                    out_prefix=out_prefix,
+                )
+                print(f"Plots written: {plot_dir}")
+            except (RuntimeError, ValueError) as exc:
+                print(str(exc))
+                return 1
 
     print(f"Manifest written: {manifest_path}")
     if args.dry_run:

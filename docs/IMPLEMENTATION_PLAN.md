@@ -59,5 +59,7 @@ This plan tracks implementation of v1 only. Item 10 (post-v1 roadmap) was intent
 - [x] Add direction summary plot by namespace at configurable alpha
 - [x] Add semantic network plot for multi-study similarity matrices
 - [x] Add optional `plot` dependency group (`matplotlib`)
-- [ ] Add figure-generation integration hook in `gokit enrich` (optional auto-emit)
-- [ ] Add CI lane covering `.[plot]` extra and headless rendering
+- [x] Add figure-generation integration hook in `gokit enrich` (optional auto-emit)
+- [x] Add CI lane covering `.[plot]` extra and headless rendering
+- [x] Add direction-aware summary columns to grouped summary outputs
+- [x] Add `gokit report` markdown consolidator for run outputs

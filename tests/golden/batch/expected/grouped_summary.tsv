@@ -1,5 +1,5 @@
-study_id	namespace	total_terms	significant_terms	alpha
-study_a	BP	2	0	0.05
-study_a	MF	1	0	0.05
-study_b	BP	2	0	0.05
-study_b	MF	1	0	0.05
+study_id	namespace	total_terms	over_terms	under_terms	significant_terms	over_significant_terms	under_significant_terms	alpha
+study_a	BP	2	2	0	0	0	0	0.05
+study_a	MF	1	0	1	0	0	0	0.05
+study_b	BP	2	1	1	0	0	0	0.05
+study_b	MF	1	1	0	0	0	0	0.05

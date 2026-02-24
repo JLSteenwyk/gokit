@@ -14,7 +14,7 @@ def _write(path: Path, text: str) -> None:
 def test_parser_has_expected_commands() -> None:
     parser = build_parser()
     help_text = parser.format_help()
-    for cmd in ["enrich", "validate", "benchmark", "cache", "explain", "plot", "download"]:
+    for cmd in ["enrich", "validate", "benchmark", "cache", "explain", "plot", "download", "report"]:
         assert cmd in help_text
 
 
