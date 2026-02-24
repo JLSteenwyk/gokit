@@ -28,6 +28,19 @@ pip install -e .[plot]
 - `gokit report`
 - Shorthand aliases: `gk_enrich`, `gk_validate`, `gk_benchmark`, `gk_cache`, `gk_explain`, `gk_plot`, `gk_download`, `gk_report`
 
+## Command status
+
+| Command | Status | What it does |
+|---|---|---|
+| `gokit enrich` | Supported | Runs GO enrichment (single or batch), writes deterministic TSV/JSONL/parquet outputs, semantic comparisons, optional auto-plot emission, and a reproducibility manifest. |
+| `gokit validate` | Supported | Validates required input files and basic readiness checks before enrichment. |
+| `gokit benchmark` | Supported | Runs a local synthetic benchmark to measure runtime and cache speedup behavior. |
+| `gokit cache` | Supported | Manages and inspects ontology cache artifacts used to accelerate repeated runs. |
+| `gokit plot` | Supported | Generates publication-style figures from enrichment tables and semantic similarity matrices. |
+| `gokit download` | Supported | Downloads `go-basic.obo` and `goslim_generic.obo` from Gene Ontology endpoints. |
+| `gokit report` | Supported | Builds a consolidated markdown report summarizing outputs, top terms, and run metadata. |
+| `gokit explain` | Placeholder | Current scaffold only: prints a result object or GO ID stub; full statistical/ancestor trace explanation is planned. |
+
 ## Quick start
 
 ```bash
