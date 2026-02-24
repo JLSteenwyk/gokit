@@ -43,7 +43,9 @@ gokit enrich \
   --out-formats tsv,jsonl \
   --compare-semantic \
   --semantic-metric wang \
-  --semantic-top-k 5
+  --semantic-top-k 5 \
+  --semantic-namespace all \
+  --semantic-min-padjsig 0.05
 ```
 
 `studies.tsv` supports:
@@ -77,3 +79,7 @@ Current enrichment support:
   - `lin` (IC-based BMA)
   - `wang` (graph contribution BMA)
 - top contributing term-pair explanations in `semantic_top_pairs.tsv` (`--semantic-top-k`)
+- pairwise semantic summary stats in `semantic_pair_summary.tsv`
+- semantic pre-filters:
+  - `--semantic-namespace {BP,MF,CC,all}`
+  - `--semantic-min-padjsig FLOAT`

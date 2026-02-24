@@ -91,6 +91,7 @@ def test_batch_mode_and_semantic_output(tmp_path: Path) -> None:
     assert (out_dir / "all_studies.jsonl").exists()
     assert (out_dir / "semantic_similarity.tsv").exists()
     assert (out_dir / "semantic_top_pairs.tsv").exists()
+    assert (out_dir / "semantic_pair_summary.tsv").exists()
 
     matrix = (out_dir / "semantic_similarity.tsv").read_text(encoding="utf-8")
     assert "study_a" in matrix

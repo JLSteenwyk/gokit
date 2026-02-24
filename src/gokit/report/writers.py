@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 
 from gokit.core.enrichment import EnrichmentResult
+from gokit.core.semantic import PairwiseSemanticSummary
 
 
 def write_tsv(path: Path, results: list[EnrichmentResult]) -> None:
@@ -124,6 +125,23 @@ def write_similarity_top_pairs(
                 rows = top_pairs.get((a, b), [])
                 for rank, (ga, gb, score) in enumerate(rows, start=1):
                     handle.write(f"{a}\t{b}\t{rank}\t{ga}\t{gb}\t{score:.6f}\n")
+
+
+def write_semantic_pair_summary(path: Path, rows: list[PairwiseSemanticSummary]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8") as handle:
+        handle.write(
+            "study_a\tstudy_b\traw_a_terms\traw_b_terms\traw_overlap_terms\traw_union_terms\t"
+            "expanded_a_terms\texpanded_b_terms\texpanded_overlap_terms\texpanded_union_terms\t"
+            "similarity_score\n"
+        )
+        for r in rows:
+            handle.write(
+                f"{r.study_a}\t{r.study_b}\t{r.raw_a_terms}\t{r.raw_b_terms}\t"
+                f"{r.raw_overlap_terms}\t{r.raw_union_terms}\t{r.expanded_a_terms}\t"
+                f"{r.expanded_b_terms}\t{r.expanded_overlap_terms}\t{r.expanded_union_terms}\t"
+                f"{r.similarity_score:.6f}\n"
+            )
 
 
 def write_grouped_summary_single(path: Path, results: list[EnrichmentResult], alpha: float) -> None:

@@ -36,7 +36,10 @@ Legacy:
 
 `gokit`:
 - add `--compare-semantic --semantic-metric wang` to batch mode.
-- outputs `semantic_similarity.tsv` and `semantic_top_pairs.tsv`.
+- outputs `semantic_similarity.tsv`, `semantic_top_pairs.tsv`, and `semantic_pair_summary.tsv`.
+- optional filters:
+  - `--semantic-namespace {BP,MF,CC,all}`
+  - `--semantic-min-padjsig <threshold>`
 
 ## Output formats
 - TSV/JSONL are available by default.

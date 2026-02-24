@@ -11,7 +11,7 @@ from gokit.core.enrichment import EnrichmentResult, OraRunner
 from gokit.core.idnorm import infer_id_mode, normalize_assoc_keys, normalize_gene_set
 from gokit.core.manifest import build_input_files, default_manifest, write_manifest
 from gokit.core.propagation import propagate_gene_to_go
-from gokit.core.semantic import StudyTermSet, pairwise_semantic_similarity
+from gokit.core.semantic import StudyTermSet, pairwise_semantic_similarity, pairwise_semantic_summary
 from gokit.io.assoc import read_associations
 from gokit.io.study import read_gene_set, read_study_manifest
 from gokit.report.writers import (
@@ -21,6 +21,7 @@ from gokit.report.writers import (
     write_combined_tsv,
     write_jsonl,
     write_similarity_matrix,
+    write_semantic_pair_summary,
     write_similarity_top_pairs,
     write_tsv,
 )
@@ -77,6 +78,18 @@ def register_parser(subparsers: argparse._SubParsersAction[argparse.ArgumentPars
         default=5,
         help="Top contributing GO term pairs to emit per study pair",
     )
+    parser.add_argument(
+        "--semantic-min-padjsig",
+        type=float,
+        default=None,
+        help="Only include enriched terms with p_adjusted <= threshold in semantic comparison",
+    )
+    parser.add_argument(
+        "--semantic-namespace",
+        default="all",
+        choices=["BP", "MF", "CC", "all"],
+        help="Namespace filter applied before semantic comparison",
+    )
     parser.add_argument("--manifest", default="", help="Optional manifest output path")
     parser.add_argument("--dry-run", action="store_true", help="Validate and emit manifest only")
     parser.set_defaults(func=run)
@@ -114,6 +127,7 @@ def run(args: argparse.Namespace) -> int:
         combined_rows: list[tuple[str, EnrichmentResult]] = []
         pairwise: dict[tuple[str, str], float] = {}
         top_pairs: dict[tuple[str, str], list[tuple[str, str, float]]] = {}
+        semantic_summary_rows = []
         study_ids: list[str] = []
     else:
         pop_genes_raw = read_gene_set(population)
@@ -139,6 +153,7 @@ def run(args: argparse.Namespace) -> int:
         combined_rows: list[tuple[str, EnrichmentResult]] = []
         pairwise: dict[tuple[str, str], float] = {}
         top_pairs: dict[tuple[str, str], list[tuple[str, str, float]]] = {}
+        semantic_summary_rows = []
         study_ids: list[str] = []
 
         if study_path:
@@ -162,7 +177,12 @@ def run(args: argparse.Namespace) -> int:
                     store_items=(args.store_items == "always"),
                 )
                 combined_rows.extend((study_id, row) for row in rows)
-                termsets.append(StudyTermSet(study_id=study_id, go_ids={r.go_id for r in rows}))
+                rows_sem = rows
+                if args.semantic_namespace != "all":
+                    rows_sem = [r for r in rows_sem if r.namespace == args.semantic_namespace]
+                if args.semantic_min_padjsig is not None:
+                    rows_sem = [r for r in rows_sem if r.p_adjusted <= args.semantic_min_padjsig]
+                termsets.append(StudyTermSet(study_id=study_id, go_ids={r.go_id for r in rows_sem}))
                 study_ids.append(study_id)
             results = [row for _, row in combined_rows]
             if args.compare_semantic:
@@ -175,6 +195,9 @@ def run(args: argparse.Namespace) -> int:
                     go_to_parents=obo_cached.go_to_parents,
                     top_k=args.semantic_top_k,
                 )
+                semantic_summary_rows = pairwise_semantic_summary(
+                    termsets, obo_cached.go_to_ancestors, pairwise
+                )
 
         notes = (
             f"Computed {len(results)} enriched GO rows; "
@@ -185,6 +208,8 @@ def run(args: argparse.Namespace) -> int:
             f"batch={bool(args.studies)}; "
             f"semantic_compared={bool(pairwise)}; "
             f"semantic_metric={args.semantic_metric if args.compare_semantic else 'na'}; "
+            f"semantic_namespace={args.semantic_namespace if args.compare_semantic else 'na'}; "
+            f"semantic_min_padjsig={args.semantic_min_padjsig if args.compare_semantic else 'na'}; "
             f"id_type={id_mode}."
         )
 
@@ -251,6 +276,10 @@ def run(args: argparse.Namespace) -> int:
                     out_dir / "semantic_top_pairs.tsv",
                     top_pairs,
                     study_ids,
+                )
+                write_semantic_pair_summary(
+                    out_dir / "semantic_pair_summary.tsv",
+                    semantic_summary_rows,
                 )
 
     print(f"Manifest written: {manifest_path}")

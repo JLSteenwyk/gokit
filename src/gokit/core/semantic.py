@@ -22,6 +22,21 @@ def _expanded_terms(go_ids: set[str], go_to_ancestors: dict[str, set[str]]) -> s
     return expanded
 
 
+@dataclass
+class PairwiseSemanticSummary:
+    study_a: str
+    study_b: str
+    raw_a_terms: int
+    raw_b_terms: int
+    raw_overlap_terms: int
+    raw_union_terms: int
+    expanded_a_terms: int
+    expanded_b_terms: int
+    expanded_overlap_terms: int
+    expanded_union_terms: int
+    similarity_score: float
+
+
 def jaccard(a: set[str], b: set[str]) -> float:
     if not a and not b:
         return 1.0
@@ -202,3 +217,42 @@ def pairwise_semantic_similarity(
             top_pairs[(ida, idb)] = best
             top_pairs[(idb, ida)] = [(b, a, s) for (a, b, s) in best]
     return sim, top_pairs
+
+
+def pairwise_semantic_summary(
+    studies: list[StudyTermSet],
+    go_to_ancestors: dict[str, set[str]],
+    pairwise_scores: dict[tuple[str, str], float],
+) -> list[PairwiseSemanticSummary]:
+    raw = {s.study_id: set(s.go_ids) for s in studies}
+    expanded = {
+        s.study_id: _expanded_terms(s.go_ids, go_to_ancestors)
+        for s in studies
+    }
+
+    out: list[PairwiseSemanticSummary] = []
+    ids = [s.study_id for s in studies]
+    for i, ida in enumerate(ids):
+        for j, idb in enumerate(ids):
+            if j < i:
+                continue
+            raw_a = raw[ida]
+            raw_b = raw[idb]
+            exp_a = expanded[ida]
+            exp_b = expanded[idb]
+            out.append(
+                PairwiseSemanticSummary(
+                    study_a=ida,
+                    study_b=idb,
+                    raw_a_terms=len(raw_a),
+                    raw_b_terms=len(raw_b),
+                    raw_overlap_terms=len(raw_a.intersection(raw_b)),
+                    raw_union_terms=len(raw_a.union(raw_b)),
+                    expanded_a_terms=len(exp_a),
+                    expanded_b_terms=len(exp_b),
+                    expanded_overlap_terms=len(exp_a.intersection(exp_b)),
+                    expanded_union_terms=len(exp_a.union(exp_b)),
+                    similarity_score=pairwise_scores.get((ida, idb), 0.0),
+                )
+            )
+    return out

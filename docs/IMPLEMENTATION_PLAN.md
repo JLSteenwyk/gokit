@@ -48,3 +48,4 @@ This plan tracks implementation of v1 only. Item 10 (post-v1 roadmap) was intent
 - [x] Add `auto` format detection for association files
 - [x] Add parser and CLI integration tests for new formats
 - [x] Add `--id-type {auto,str,int}` normalization and mixed-ID coverage tests
+- [x] Add semantic filters (`--semantic-min-padjsig`, `--semantic-namespace`) and pairwise summary stats
