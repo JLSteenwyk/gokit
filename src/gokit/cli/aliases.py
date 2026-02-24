@@ -26,10 +26,6 @@ def benchmark_main(argv: Sequence[str] | None = None) -> int:
     return _run_with("benchmark", argv)
 
 
-def cache_main(argv: Sequence[str] | None = None) -> int:
-    return _run_with("cache", argv)
-
-
 def explain_main(argv: Sequence[str] | None = None) -> int:
     return _run_with("explain", argv)
 
