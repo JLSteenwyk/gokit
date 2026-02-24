@@ -67,6 +67,7 @@ geneC GO:0005575
 ```bash
 gokit download
 
+# optional but recommended input sanity check
 gokit validate --study study.txt --population population.txt --assoc assoc.txt
 
 gokit enrich \
