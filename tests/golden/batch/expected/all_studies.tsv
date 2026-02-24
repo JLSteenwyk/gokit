@@ -1,0 +1,5 @@
+study_id	GO	NS	study_count	study_n	pop_count	pop_n	p_uncorrected	p_adjusted
+study_a	GO:0000002	BP	2	2	2	4	0.166667	0.333333
+study_a	GO:0000001	BP	2	2	4	4	1	1
+study_b	GO:0000003	MF	2	2	2	4	0.166667	0.333333
+study_b	GO:0000001	BP	2	2	4	4	1	1

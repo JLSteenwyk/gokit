@@ -1,0 +1,4 @@
+gene1 GO:0000002
+gene2 GO:0000002
+gene3 GO:0000003
+gene4 GO:0000003
