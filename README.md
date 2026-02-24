@@ -30,6 +30,22 @@ gokit enrich \
   --out results/goea
 ```
 
+Format-specific examples:
+
+```bash
+# id2gos
+gokit enrich --study study.txt --population population.txt --assoc assoc.id2gos --assoc-format id2gos --obo go-basic.obo --out out/id2gos
+
+# GAF
+gokit enrich --study study.txt --population population.txt --assoc goa_human.gaf --assoc-format gaf --obo go-basic.obo --out out/gaf
+
+# GPAD
+gokit enrich --study study.txt --population population.txt --assoc goa_human.gpad --assoc-format gpad --obo go-basic.obo --out out/gpad
+
+# gene2go
+gokit enrich --study study.txt --population population.txt --assoc gene2go --assoc-format gene2go --id-type auto --obo go-basic.obo --out out/gene2go
+```
+
 Batch mode:
 
 ```bash

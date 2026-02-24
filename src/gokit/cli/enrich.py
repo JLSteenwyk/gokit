@@ -129,6 +129,7 @@ def run(args: argparse.Namespace) -> int:
         top_pairs: dict[tuple[str, str], list[tuple[str, str, float]]] = {}
         semantic_summary_rows = []
         study_ids: list[str] = []
+        semantic_warning = ""
     else:
         pop_genes_raw = read_gene_set(population)
         gene_to_go_raw = read_associations(assoc, args.assoc_format)
@@ -155,6 +156,7 @@ def run(args: argparse.Namespace) -> int:
         top_pairs: dict[tuple[str, str], list[tuple[str, str, float]]] = {}
         semantic_summary_rows = []
         study_ids: list[str] = []
+        semantic_warning = ""
 
         if study_path:
             study_genes = normalize_gene_set(read_gene_set(study_path), id_mode)
@@ -186,18 +188,30 @@ def run(args: argparse.Namespace) -> int:
                 study_ids.append(study_id)
             results = [row for _, row in combined_rows]
             if args.compare_semantic:
-                pairwise, top_pairs = pairwise_semantic_similarity(
-                    termsets,
-                    obo_cached.go_to_ancestors,
-                    metric=args.semantic_metric,
-                    go_to_pop_count=runner.go_to_pop_count,
-                    pop_n=len(runner.population_genes),
-                    go_to_parents=obo_cached.go_to_parents,
-                    top_k=args.semantic_top_k,
-                )
-                semantic_summary_rows = pairwise_semantic_summary(
-                    termsets, obo_cached.go_to_ancestors, pairwise
-                )
+                selected_counts = {t.study_id: len(t.go_ids) for t in termsets}
+                selected_total = sum(selected_counts.values())
+                nonempty = sum(1 for c in selected_counts.values() if c > 0)
+                if selected_total == 0:
+                    semantic_warning = (
+                        "Semantic comparison skipped: all studies have zero terms after semantic filters."
+                    )
+                else:
+                    if nonempty < len(termsets):
+                        semantic_warning = (
+                            "Semantic comparison includes empty term sets for some studies after filters."
+                        )
+                    pairwise, top_pairs = pairwise_semantic_similarity(
+                        termsets,
+                        obo_cached.go_to_ancestors,
+                        metric=args.semantic_metric,
+                        go_to_pop_count=runner.go_to_pop_count,
+                        pop_n=len(runner.population_genes),
+                        go_to_parents=obo_cached.go_to_parents,
+                        top_k=args.semantic_top_k,
+                    )
+                    semantic_summary_rows = pairwise_semantic_summary(
+                        termsets, obo_cached.go_to_ancestors, pairwise
+                    )
 
         notes = (
             f"Computed {len(results)} enriched GO rows; "
@@ -210,6 +224,7 @@ def run(args: argparse.Namespace) -> int:
             f"semantic_metric={args.semantic_metric if args.compare_semantic else 'na'}; "
             f"semantic_namespace={args.semantic_namespace if args.compare_semantic else 'na'}; "
             f"semantic_min_padjsig={args.semantic_min_padjsig if args.compare_semantic else 'na'}; "
+            f"semantic_warning={semantic_warning or 'none'}; "
             f"id_type={id_mode}."
         )
 
@@ -281,6 +296,8 @@ def run(args: argparse.Namespace) -> int:
                     out_dir / "semantic_pair_summary.tsv",
                     semantic_summary_rows,
                 )
+            elif args.compare_semantic and semantic_warning:
+                print(f"WARNING: {semantic_warning}")
 
     print(f"Manifest written: {manifest_path}")
     if args.dry_run:

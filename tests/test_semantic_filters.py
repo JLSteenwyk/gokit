@@ -121,10 +121,6 @@ def test_semantic_min_padjsig_filter_can_zero_terms(tmp_path: Path) -> None:
         ]
     )
     assert rc == 0
-    rows = (out / "semantic_pair_summary.tsv").read_text(encoding="utf-8").strip().splitlines()
-    assert len(rows) >= 2
-    # with strict threshold, raw term counts should be 0 for cross-study row
-    cross = [r for r in rows[1:] if r.startswith("study_a\tstudy_b")][0]
-    cols = cross.split("\t")
-    assert cols[2] == "0"  # raw_a_terms
-    assert cols[3] == "0"  # raw_b_terms
+    # strict threshold removes all semantic terms; semantic files are skipped
+    assert not (out / "semantic_pair_summary.tsv").exists()
+    assert not (out / "semantic_similarity.tsv").exists()

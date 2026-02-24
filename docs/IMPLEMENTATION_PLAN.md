@@ -49,3 +49,6 @@ This plan tracks implementation of v1 only. Item 10 (post-v1 roadmap) was intent
 - [x] Add parser and CLI integration tests for new formats
 - [x] Add `--id-type {auto,str,int}` normalization and mixed-ID coverage tests
 - [x] Add semantic filters (`--semantic-min-padjsig`, `--semantic-namespace`) and pairwise summary stats
+- [x] Improve semantic empty-result UX warnings
+- [x] Add committed benchmark baseline and CI baseline regression checks
+- [x] Add format-specific quickstart examples in README

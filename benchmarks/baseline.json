@@ -1,0 +1,11 @@
+{
+  "cold_elapsed_seconds": 0.939073,
+  "cold_total_rows": 4544,
+  "go_terms": 1000,
+  "iterations": 8,
+  "population_size": 4000,
+  "speedup_x": 1.022,
+  "study_size": 250,
+  "warm_elapsed_seconds": 0.918582,
+  "warm_total_rows": 4544
+}
