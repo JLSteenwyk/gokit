@@ -22,10 +22,6 @@ def validate_main(argv: Sequence[str] | None = None) -> int:
     return _run_with("validate", argv)
 
 
-def benchmark_main(argv: Sequence[str] | None = None) -> int:
-    return _run_with("benchmark", argv)
-
-
 def explain_main(argv: Sequence[str] | None = None) -> int:
     return _run_with("explain", argv)
 

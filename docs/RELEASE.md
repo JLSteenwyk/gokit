@@ -5,9 +5,8 @@
 2. Run local checks:
    - `PYTHONPATH=src python3 -m compileall -q src tests`
    - `PYTHONPATH=src pytest`
-   - `PYTHONPATH=src python -m gokit.cli.main benchmark --out benchmark_results/local.json`
 3. Verify CI green on all Python versions.
-4. Confirm benchmark gate passes.
+4. Confirm plot smoke lane passes.
 5. Update `README.md` and migration notes if CLI behavior changed.
 
 ## Tag and build
@@ -24,8 +23,8 @@
 2. Publish GitHub release notes summarizing:
    - new commands/options
    - compatibility notes
-   - benchmark highlights
+   - plotting/reporting highlights
 
 ## Post-release
 1. Bump to next dev version.
-2. Archive benchmark artifact for release commit.
+2. Archive release artifacts for the release commit.
