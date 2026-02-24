@@ -3,8 +3,10 @@ from __future__ import annotations
 from pathlib import Path
 
 from gokit.report.figures import (
+    build_similarity_edges,
     filter_rows,
     read_enrichment_tsv,
+    read_similarity_matrix,
     resolve_output_path,
     summarize_direction_counts,
     top_rows,
@@ -67,3 +69,24 @@ def test_summary_and_top_rows(tmp_path: Path) -> None:
 def test_resolve_output_path() -> None:
     assert resolve_output_path(Path("out/figure"), "png").as_posix().endswith("figure.png")
     assert resolve_output_path(Path("out/figure.svg"), "png").as_posix().endswith("figure.svg")
+
+
+def test_read_similarity_matrix_and_edges(tmp_path: Path) -> None:
+    matrix = tmp_path / "semantic_similarity.tsv"
+    _write(
+        matrix,
+        "\n".join(
+            [
+                "study_id\tstudy_a\tstudy_b\tstudy_c",
+                "study_a\t1.000000\t0.800000\t0.100000",
+                "study_b\t0.800000\t1.000000\t0.300000",
+                "study_c\t0.100000\t0.300000\t1.000000",
+                "",
+            ]
+        ),
+    )
+    ids, pairwise = read_similarity_matrix(matrix)
+    assert ids == ["study_a", "study_b", "study_c"]
+    edges = build_similarity_edges(ids, pairwise, min_similarity=0.25, max_edges=10)
+    assert len(edges) == 2
+    assert (edges[0].study_a, edges[0].study_b, round(edges[0].score, 1)) == ("study_a", "study_b", 0.8)

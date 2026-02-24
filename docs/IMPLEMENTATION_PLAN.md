@@ -57,6 +57,7 @@ This plan tracks implementation of v1 only. Item 10 (post-v1 roadmap) was intent
 - [x] Add `gokit plot` subcommand for figure generation from TSV outputs
 - [x] Add term-bar plot for enriched/purifying terms (`over`/`under`)
 - [x] Add direction summary plot by namespace at configurable alpha
+- [x] Add semantic network plot for multi-study similarity matrices
 - [x] Add optional `plot` dependency group (`matplotlib`)
 - [ ] Add figure-generation integration hook in `gokit enrich` (optional auto-emit)
 - [ ] Add CI lane covering `.[plot]` extra and headless rendering

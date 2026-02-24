@@ -20,7 +20,8 @@ io = [
 ]
 plot = [
   "matplotlib>=3.8",
-  "pypubfigs>=1.1.3"
+  "pypubfigs>=1.1.3",
+  "networkx>=3.3"
 ]
 dev = [
   "pytest>=8.0",

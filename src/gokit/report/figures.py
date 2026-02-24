@@ -17,6 +17,13 @@ class PlotRow:
     study_id: str | None = None
 
 
+@dataclass
+class SemanticEdge:
+    study_a: str
+    study_b: str
+    score: float
+
+
 def _pick(row: dict[str, str], *keys: str) -> str:
     for key in keys:
         if key in row and row[key] is not None:
@@ -47,6 +54,52 @@ def read_enrichment_tsv(path: Path) -> list[PlotRow]:
                 )
             )
     return rows
+
+
+def read_similarity_matrix(path: Path) -> tuple[list[str], dict[tuple[str, str], float]]:
+    with path.open("r", encoding="utf-8", newline="") as handle:
+        reader = csv.reader(handle, delimiter="\t")
+        header = next(reader, [])
+        if len(header) < 2 or header[0] != "study_id":
+            raise ValueError("Similarity matrix must start with 'study_id' header.")
+        ids = [x.strip() for x in header[1:] if x.strip()]
+        pairwise: dict[tuple[str, str], float] = {}
+        for row in reader:
+            if not row:
+                continue
+            row_id = row[0].strip()
+            if not row_id:
+                continue
+            vals = row[1:]
+            for idx, raw in enumerate(vals):
+                if idx >= len(ids):
+                    break
+                col_id = ids[idx]
+                try:
+                    score = float(raw)
+                except ValueError:
+                    continue
+                pairwise[(row_id, col_id)] = score
+        return ids, pairwise
+
+
+def build_similarity_edges(
+    ids: list[str],
+    pairwise: dict[tuple[str, str], float],
+    *,
+    min_similarity: float = 0.2,
+    max_edges: int = 100,
+) -> list[SemanticEdge]:
+    edges: list[SemanticEdge] = []
+    for i, a in enumerate(ids):
+        for j, b in enumerate(ids):
+            if j <= i:
+                continue
+            score = pairwise.get((a, b), pairwise.get((b, a), 0.0))
+            if score >= min_similarity:
+                edges.append(SemanticEdge(study_a=a, study_b=b, score=score))
+    edges.sort(key=lambda e: (-e.score, e.study_a, e.study_b))
+    return edges[: max(1, max_edges)]
 
 
 def filter_rows(
@@ -109,6 +162,17 @@ def _require_matplotlib():
             "Install with: pip install 'gokit[plot]'"
         ) from exc
     return plt
+
+
+def _require_networkx():
+    try:
+        import networkx as nx
+    except Exception as exc:  # pragma: no cover - environment dependent
+        raise RuntimeError(
+            "Semantic network plotting requires optional dependency 'networkx'. "
+            "Install with: pip install 'gokit[plot]'"
+        ) from exc
+    return nx
 
 
 def _colors() -> dict[str, str]:
@@ -209,6 +273,84 @@ def render_term_bar(
     fig.tight_layout()
     out.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(out, dpi=200, bbox_inches="tight")
+    plt.close(fig)
+
+
+def render_semantic_network(
+    ids: list[str],
+    pairwise: dict[tuple[str, str], float],
+    *,
+    out: Path,
+    min_similarity: float = 0.2,
+    max_edges: int = 100,
+    title: str = "",
+) -> None:
+    if len(ids) < 2:
+        raise ValueError("Need at least two studies for semantic network plotting.")
+
+    edges = build_similarity_edges(
+        ids,
+        pairwise,
+        min_similarity=min_similarity,
+        max_edges=max_edges,
+    )
+    if not edges:
+        raise ValueError("No semantic edges passed the selected similarity threshold.")
+
+    plt = _require_matplotlib()
+    nx = _require_networkx()
+    c = _colors()
+
+    graph = nx.Graph()
+    graph.add_nodes_from(ids)
+    for edge in edges:
+        graph.add_edge(edge.study_a, edge.study_b, weight=edge.score)
+
+    pos = nx.spring_layout(graph, weight="weight", seed=13)
+    node_sizes: list[float] = []
+    for node in graph.nodes:
+        weights = [graph[node][nbr]["weight"] for nbr in graph.neighbors(node)]
+        mean_w = (sum(weights) / len(weights)) if weights else 0.0
+        node_sizes.append(900 + 2400 * mean_w)
+
+    edge_widths = [1.0 + 5.0 * graph[u][v]["weight"] for u, v in graph.edges]
+    edge_alpha = [0.25 + 0.6 * graph[u][v]["weight"] for u, v in graph.edges]
+
+    fig, ax = plt.subplots(figsize=(9, 7))
+    fig.patch.set_facecolor(c["bg"])
+    ax.set_facecolor(c["panel"])
+    ax.axis("off")
+    _style_axes(
+        ax,
+        title=title or "Semantic Similarity Network",
+        subtitle=f"Edges: similarity >= {min_similarity} (top {max_edges})",
+    )
+    ax.grid(False)
+
+    for (u, v), w, a in zip(graph.edges, edge_widths, edge_alpha):
+        nx.draw_networkx_edges(
+            graph,
+            pos,
+            edgelist=[(u, v)],
+            width=w,
+            alpha=min(max(a, 0.0), 1.0),
+            edge_color=c["over"],
+            ax=ax,
+        )
+    nx.draw_networkx_nodes(
+        graph,
+        pos,
+        node_size=node_sizes,
+        node_color=c["panel"],
+        edgecolors=c["under"],
+        linewidths=1.8,
+        ax=ax,
+    )
+    nx.draw_networkx_labels(graph, pos, font_size=10, font_color=c["title"], ax=ax)
+
+    out.parent.mkdir(parents=True, exist_ok=True)
+    fig.tight_layout()
+    fig.savefig(out, dpi=220, bbox_inches="tight")
     plt.close(fig)
 
 

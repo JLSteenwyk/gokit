@@ -91,6 +91,13 @@ gokit plot \
   --kind direction-summary \
   --alpha 0.05 \
   --out figures/study_a_direction_summary.svg
+
+gokit plot \
+  --input results_batch/semantic_similarity.tsv \
+  --kind semantic-network \
+  --min-similarity 0.25 \
+  --max-edges 40 \
+  --out figures/semantic_network.png
 ```
 
 `studies.tsv` supports:
@@ -132,6 +139,7 @@ Current enrichment support:
 - figure generation from TSV outputs via `gokit plot`:
   - `term-bar`: top terms by `-log10(p_adjusted)` colored by direction
   - `direction-summary`: significant over/under counts by namespace
+  - `semantic-network`: cross-study graph from `semantic_similarity.tsv`
 - semantic pre-filters:
   - `--semantic-namespace {BP,MF,CC,all}`
   - `--semantic-min-padjsig FLOAT`
