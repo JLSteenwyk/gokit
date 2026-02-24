@@ -32,3 +32,7 @@ def cache_main(argv: Sequence[str] | None = None) -> int:
 
 def explain_main(argv: Sequence[str] | None = None) -> int:
     return _run_with("explain", argv)
+
+
+def plot_main(argv: Sequence[str] | None = None) -> int:
+    return _run_with("plot", argv)

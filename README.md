@@ -8,6 +8,14 @@
 pip install -e .[dev]
 ```
 
+For figure generation:
+
+```bash
+pip install -e .[plot]
+```
+
+`gokit plot` uses color palettes from `pypubfigs`.
+
 ## Commands
 
 - `gokit enrich`
@@ -15,7 +23,8 @@ pip install -e .[dev]
 - `gokit benchmark`
 - `gokit cache`
 - `gokit explain`
-- Shorthand aliases: `gk_enrich`, `gk_validate`, `gk_benchmark`, `gk_cache`, `gk_explain`
+- `gokit plot`
+- Shorthand aliases: `gk_enrich`, `gk_validate`, `gk_benchmark`, `gk_cache`, `gk_explain`, `gk_plot`
 
 ## Quick start
 
@@ -64,6 +73,26 @@ gokit enrich \
   --semantic-min-padjsig 0.05
 ```
 
+Figure generation:
+
+```bash
+gokit plot \
+  --input results_batch/all_studies.tsv \
+  --study-id study_a \
+  --kind term-bar \
+  --direction both \
+  --top-n 20 \
+  --out figures/study_a_terms \
+  --format png
+
+gokit plot \
+  --input results_batch/all_studies.tsv \
+  --study-id study_a \
+  --kind direction-summary \
+  --alpha 0.05 \
+  --out figures/study_a_direction_summary.svg
+```
+
 `studies.tsv` supports:
 - `study_name<TAB>/path/to/study.txt`
 - `/path/to/study.txt` (name inferred from filename)
@@ -100,6 +129,9 @@ Current enrichment support:
   - `wang` (graph contribution BMA)
 - top contributing term-pair explanations in `semantic_top_pairs.tsv` (`--semantic-top-k`)
 - pairwise semantic summary stats in `semantic_pair_summary.tsv`
+- figure generation from TSV outputs via `gokit plot`:
+  - `term-bar`: top terms by `-log10(p_adjusted)` colored by direction
+  - `direction-summary`: significant over/under counts by namespace
 - semantic pre-filters:
   - `--semantic-namespace {BP,MF,CC,all}`
   - `--semantic-min-padjsig FLOAT`

@@ -52,3 +52,11 @@ This plan tracks implementation of v1 only. Item 10 (post-v1 roadmap) was intent
 - [x] Improve semantic empty-result UX warnings
 - [x] Add committed benchmark baseline and CI baseline regression checks
 - [x] Add format-specific quickstart examples in README
+
+## v0.1.2 Increment (In Progress)
+- [x] Add `gokit plot` subcommand for figure generation from TSV outputs
+- [x] Add term-bar plot for enriched/purifying terms (`over`/`under`)
+- [x] Add direction summary plot by namespace at configurable alpha
+- [x] Add optional `plot` dependency group (`matplotlib`)
+- [ ] Add figure-generation integration hook in `gokit enrich` (optional auto-emit)
+- [ ] Add CI lane covering `.[plot]` extra and headless rendering

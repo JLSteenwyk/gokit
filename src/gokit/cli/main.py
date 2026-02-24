@@ -5,7 +5,7 @@ from __future__ import annotations
 import argparse
 from collections.abc import Sequence
 
-from gokit.cli import benchmark, cache, enrich, explain, validate
+from gokit.cli import benchmark, cache, enrich, explain, plot, validate
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -17,6 +17,7 @@ def build_parser() -> argparse.ArgumentParser:
     benchmark.register_parser(subparsers)
     cache.register_parser(subparsers)
     explain.register_parser(subparsers)
+    plot.register_parser(subparsers)
 
     return parser
 
