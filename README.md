@@ -39,6 +39,32 @@ pip install -e .[plot]
 
 ## Quick start
 
+Input file format (minimal):
+
+- `--study study.txt`: one study gene ID per line.
+- `--population population.txt`: one background/population gene ID per line.
+- `--assoc assoc.txt`: one gene-to-GO mapping per line as `<gene_id><space>GO:NNNNNNN` (tab also accepted).
+
+Example:
+
+```text
+# study.txt
+geneA
+geneB
+
+# population.txt
+geneA
+geneB
+geneC
+geneD
+
+# assoc.txt
+geneA GO:0008150
+geneA GO:0003674
+geneB GO:0008150
+geneC GO:0005575
+```
+
 ```bash
 gokit download
 
