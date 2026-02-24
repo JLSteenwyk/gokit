@@ -1,0 +1,15 @@
+format-version: 1.2
+data-version: golden-single
+
+[Term]
+id: GO:0000001
+namespace: biological_process
+
+[Term]
+id: GO:0000002
+namespace: biological_process
+is_a: GO:0000001 ! parent
+
+[Term]
+id: GO:0000003
+namespace: molecular_function
