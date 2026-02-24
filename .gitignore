@@ -1,0 +1,24 @@
+# Python cache/artifacts
+__pycache__/
+*.py[cod]
+*.so
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments
+venv/
+.venv/
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+
+# Local benchmark outputs
+benchmark_results/
+
+# Large ontology files (local only)
+go-basic.obo
+goslim_generic.obo
+*.obo

@@ -139,24 +139,14 @@ Phase 4: CI Hardening (1-2 weeks)
 - Compatibility tests across Python versions.
 - Release candidate and migration docs.
 
-## 10. Risks and Mitigations
-- Risk: Optimization changes statistical outputs.
-- Mitigation: Mandatory equivalence tests and feature flags.
-
-- Risk: Cache invalidation errors.
-- Mitigation: Content-hash keys and strict invalidation tests.
-
-- Risk: Scope creep in v1.
-- Mitigation: Freeze v1 to `enrich/validate/cache/benchmark` commands.
-
-## 11. Success Metrics
+## 10. Success Metrics
 - 2x faster repeated-run throughput on standard benchmark datasets.
 - 30-50% lower peak memory in default mode.
 - Deterministic re-run outputs (byte-identical for same inputs/seed).
 - 90%+ command-level test coverage for CLI critical paths.
 - Zero known correctness regressions against golden fixtures.
 
-## 12. Immediate Next Steps
+## 11. Immediate Next Steps
 1. Initialize `gokit` package skeleton and `enrich` command contract.
 2. Implement strict input validators and manifest schema.
 3. Implement correctness-critical namespace merge and regression tests.

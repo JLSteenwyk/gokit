@@ -1,0 +1,70 @@
+# gokit
+
+`gokit` is a command-line toolkit scaffold for Gene Ontology enrichment workflows.
+
+## Install
+
+```bash
+pip install -e .[dev]
+```
+
+## Commands
+
+- `gokit enrich`
+- `gokit validate`
+- `gokit benchmark`
+- `gokit cache`
+- `gokit explain`
+- Shorthand aliases: `gk_enrich`, `gk_validate`, `gk_benchmark`, `gk_cache`, `gk_explain`
+
+## Quick start
+
+```bash
+gokit validate --study study.txt --population population.txt --assoc assoc.txt --obo go-basic.obo
+
+gokit enrich \
+  --study study.txt \
+  --population population.txt \
+  --assoc assoc.txt \
+  --obo go-basic.obo \
+  --out results/goea
+```
+
+Batch mode:
+
+```bash
+gokit enrich \
+  --studies studies.tsv \
+  --population population.txt \
+  --assoc assoc.txt \
+  --assoc-format id2gos \
+  --obo go-basic.obo \
+  --out results_batch \
+  --out-formats tsv,jsonl \
+  --compare-semantic \
+  --semantic-metric wang \
+  --semantic-top-k 5
+```
+
+`studies.tsv` supports:
+- `study_name<TAB>/path/to/study.txt`
+- `/path/to/study.txt` (name inferred from filename)
+
+Current status: single-study enrichment is implemented for `id2gos`; broader format support and performance phases are in progress.
+
+Current enrichment support:
+- `id2gos` associations (`--assoc-format id2gos` or `auto`)
+- single-study ORA with Fisher right-tail + Benjamini-Hochberg correction
+- deterministic TSV/JSONL output ordering
+- batch mode via `--studies` with per-study + combined outputs
+- grouped summaries:
+  - single-study: `<out>.summary.tsv`
+  - batch: `grouped_summary.tsv` + per-study `*.summary.tsv`
+- parquet output via `--out-formats parquet` (requires optional dependency):
+  - `pip install 'gokit[io]'`
+- ontology-aware cross-study similarity matrix (`--compare-semantic`) with metrics:
+  - `jaccard` (ancestor-closure set overlap)
+  - `resnik` (IC-based BMA)
+  - `lin` (IC-based BMA)
+  - `wang` (graph contribution BMA)
+- top contributing term-pair explanations in `semantic_top_pairs.tsv` (`--semantic-top-k`)
