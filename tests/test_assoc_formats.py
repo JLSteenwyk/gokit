@@ -72,3 +72,20 @@ def test_auto_detection(tmp_path: Path) -> None:
     )
     assoc = read_associations(gene2go, "auto")
     assert assoc["101"] == {"GO:0000001"}
+
+
+def test_read_id2gos_semicolon_go_list(tmp_path: Path) -> None:
+    assoc_txt = tmp_path / "assoc.txt"
+    _write(
+        assoc_txt,
+        "\n".join(
+            [
+                "geneA GO:0008150;GO:0003674",
+                "geneB GO:0005575",
+            ]
+        )
+        + "\n",
+    )
+    assoc = read_associations(assoc_txt, "id2gos")
+    assert assoc["geneA"] == {"GO:0008150", "GO:0003674"}
+    assert assoc["geneB"] == {"GO:0005575"}
