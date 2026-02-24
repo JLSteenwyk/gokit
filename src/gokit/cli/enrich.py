@@ -11,21 +11,25 @@ from gokit.core.enrichment import EnrichmentResult, OraRunner
 from gokit.core.idnorm import infer_id_mode, normalize_assoc_keys, normalize_gene_set
 from gokit.core.manifest import build_input_files, default_manifest, write_manifest
 from gokit.core.propagation import propagate_gene_to_go
-from gokit.core.semantic import StudyTermSet, pairwise_semantic_similarity, pairwise_semantic_summary
+from gokit.core.semantic import (
+    StudyTermSet,
+    pairwise_semantic_similarity,
+    pairwise_semantic_summary,
+)
 from gokit.io.assoc import read_associations
 from gokit.io.study import read_gene_set, read_study_manifest
+from gokit.report.parquet_writer import write_combined_parquet, write_results_parquet
 from gokit.report.writers import (
     write_combined_jsonl,
+    write_combined_tsv,
     write_grouped_summary_batch,
     write_grouped_summary_single,
-    write_combined_tsv,
     write_jsonl,
-    write_similarity_matrix,
     write_semantic_pair_summary,
+    write_similarity_matrix,
     write_similarity_top_pairs,
     write_tsv,
 )
-from gokit.report.parquet_writer import write_combined_parquet, write_results_parquet
 
 
 def _emit_plots(
@@ -46,7 +50,12 @@ def _emit_plots(
     if not plot_kinds:
         return
 
-    from gokit.report.figures import PlotRow, render_direction_summary, render_semantic_network, render_term_bar
+    from gokit.report.figures import (
+        PlotRow,
+        render_direction_summary,
+        render_semantic_network,
+        render_term_bar,
+    )
 
     plot_dir.mkdir(parents=True, exist_ok=True)
     plot_rows = [
@@ -138,7 +147,11 @@ def register_parser(subparsers: argparse._SubParsersAction[argparse.ArgumentPars
     )
     parser.add_argument("--population", required=True, help="Population gene list file")
     parser.add_argument("--assoc", required=True, help="Association file")
-    parser.add_argument("--assoc-format", default="auto", choices=["auto", "gaf", "gpad", "gene2go", "id2gos"])
+    parser.add_argument(
+        "--assoc-format",
+        default="auto",
+        choices=["auto", "gaf", "gpad", "gene2go", "id2gos"],
+    )
     parser.add_argument(
         "--obo",
         default="go-basic.obo",
@@ -209,9 +222,16 @@ def register_parser(subparsers: argparse._SubParsersAction[argparse.ArgumentPars
     parser.add_argument(
         "--emit-plots",
         default="",
-        help="Comma-separated plot kinds to emit after enrichment (term-bar,direction-summary,semantic-network)",
+        help=(
+            "Comma-separated plot kinds to emit after enrichment "
+            "(term-bar,direction-summary,semantic-network)"
+        ),
     )
-    parser.add_argument("--plot-dir", default="", help="Optional output directory for emitted plots")
+    parser.add_argument(
+        "--plot-dir",
+        default="",
+        help="Optional output directory for emitted plots",
+    )
     parser.add_argument("--plot-format", default="png", choices=["png", "svg", "pdf"])
     parser.add_argument("--plot-top-n", type=int, default=20)
     parser.add_argument("--plot-alpha", type=float, default=0.05)
@@ -240,7 +260,11 @@ def run(args: argparse.Namespace) -> int:
         raise ValueError(f"Unsupported plot kind(s): {','.join(invalid_plots)}")
     out_prefix = Path(args.out)
 
-    manifest_path = Path(args.manifest) if args.manifest else out_prefix.with_suffix(".manifest.json")
+    manifest_path = (
+        Path(args.manifest)
+        if args.manifest
+        else out_prefix.with_suffix(".manifest.json")
+    )
     named_inputs: list[tuple[str, Path]] = [
         ("population", population),
         ("association", assoc),
@@ -265,7 +289,11 @@ def run(args: argparse.Namespace) -> int:
         pop_genes_raw = read_gene_set(population)
         gene_to_go_raw = read_associations(assoc, args.assoc_format)
 
-        id_mode = args.id_type if args.id_type != "auto" else infer_id_mode(pop_genes_raw, set(gene_to_go_raw))
+        id_mode = (
+            args.id_type
+            if args.id_type != "auto"
+            else infer_id_mode(pop_genes_raw, set(gene_to_go_raw))
+        )
         pop_genes = normalize_gene_set(pop_genes_raw, id_mode)
         gene_to_go = normalize_assoc_keys(gene_to_go_raw, id_mode)
 
@@ -328,12 +356,14 @@ def run(args: argparse.Namespace) -> int:
                 nonempty = sum(1 for c in selected_counts.values() if c > 0)
                 if selected_total == 0:
                     semantic_warning = (
-                        "Semantic comparison skipped: all studies have zero terms after semantic filters."
+                        "Semantic comparison skipped: all studies have zero "
+                        "terms after semantic filters."
                     )
                 else:
                     if nonempty < len(termsets):
                         semantic_warning = (
-                            "Semantic comparison includes empty term sets for some studies after filters."
+                            "Semantic comparison includes empty term sets for "
+                            "some studies after filters."
                         )
                     pairwise, top_pairs = pairwise_semantic_similarity(
                         termsets,
@@ -382,7 +412,11 @@ def run(args: argparse.Namespace) -> int:
         if args.study:
             if "tsv" in out_formats:
                 write_tsv(out_prefix.with_suffix(".tsv"), results)
-                write_grouped_summary_single(out_prefix.with_suffix(".summary.tsv"), results, args.alpha)
+                write_grouped_summary_single(
+                    out_prefix.with_suffix(".summary.tsv"),
+                    results,
+                    args.alpha,
+                )
             if "jsonl" in out_formats:
                 write_jsonl(out_prefix.with_suffix(".jsonl"), results)
             if "parquet" in out_formats:
@@ -413,7 +447,11 @@ def run(args: argparse.Namespace) -> int:
                         return 1
             if "tsv" in out_formats:
                 write_combined_tsv(out_dir / "all_studies.tsv", combined_rows)
-                write_grouped_summary_batch(out_dir / "grouped_summary.tsv", combined_rows, args.alpha)
+                write_grouped_summary_batch(
+                    out_dir / "grouped_summary.tsv",
+                    combined_rows,
+                    args.alpha,
+                )
             if "jsonl" in out_formats:
                 write_combined_jsonl(out_dir / "all_studies.jsonl", combined_rows)
             if "parquet" in out_formats:

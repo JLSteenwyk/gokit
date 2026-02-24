@@ -89,4 +89,8 @@ def test_read_similarity_matrix_and_edges(tmp_path: Path) -> None:
     assert ids == ["study_a", "study_b", "study_c"]
     edges = build_similarity_edges(ids, pairwise, min_similarity=0.25, max_edges=10)
     assert len(edges) == 2
-    assert (edges[0].study_a, edges[0].study_b, round(edges[0].score, 1)) == ("study_a", "study_b", 0.8)
+    assert (
+        edges[0].study_a,
+        edges[0].study_b,
+        round(edges[0].score, 1),
+    ) == ("study_a", "study_b", 0.8)

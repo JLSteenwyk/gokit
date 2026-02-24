@@ -32,8 +32,14 @@ def write_results_parquet(path: Path, results: list[EnrichmentResult]) -> None:
         "pop_n": [r.pop_n for r in results],
         "p_uncorrected": [r.p_uncorrected for r in results],
         "p_adjusted": [r.p_adjusted for r in results],
-        "study_items": [sorted(r.study_items) if r.study_items is not None else None for r in results],
-        "pop_items": [sorted(r.pop_items) if r.pop_items is not None else None for r in results],
+        "study_items": [
+            sorted(r.study_items) if r.study_items is not None else None
+            for r in results
+        ],
+        "pop_items": [
+            sorted(r.pop_items) if r.pop_items is not None else None
+            for r in results
+        ],
     }
     table = pa.table(payload)
     pq.write_table(table, path)

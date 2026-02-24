@@ -173,7 +173,11 @@ class OraRunner:
                     p_uncorrected=p_unc,
                     p_adjusted=padj[idx],
                     study_items=(go_to_study_items.get(goid, set()) if store_items else None),
-                    pop_items=(go_to_pop_items.get(goid, set()) if store_items and go_to_pop_items else None),
+                    pop_items=(
+                        go_to_pop_items.get(goid, set())
+                        if store_items and go_to_pop_items
+                        else None
+                    ),
                 )
             )
         results.sort(key=lambda r: (r.p_adjusted, r.p_uncorrected, r.direction, r.go_id))

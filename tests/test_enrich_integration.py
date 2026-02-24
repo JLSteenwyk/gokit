@@ -151,6 +151,9 @@ def test_enrich_method_flag_changes_adjustment(tmp_path: Path) -> None:
         ]
     )
     assert rc == 0
-    rows = [json.loads(line) for line in out_prefix.with_suffix(".jsonl").read_text(encoding="utf-8").splitlines()]
+    rows = [
+        json.loads(line)
+        for line in out_prefix.with_suffix(".jsonl").read_text(encoding="utf-8").splitlines()
+    ]
     assert rows
     assert any(abs(r["p_adjusted"] - 0.5) < 1e-12 for r in rows)

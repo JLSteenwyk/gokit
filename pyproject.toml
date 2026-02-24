@@ -7,7 +7,7 @@ name = "gokit"
 version = "0.1.2"
 description = "Command-line toolkit for GO enrichment analysis"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 license = {text = "MIT"}
 authors = [
   {name = "GOKIT Contributors"}

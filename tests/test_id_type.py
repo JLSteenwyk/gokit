@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from gokit.cli.main import main
-from gokit.core.idnorm import infer_id_mode, normalize_assoc_keys, normalize_gene_set
+from gokit.core.idnorm import infer_id_mode, normalize_assoc_keys
 
 
 def _write(path: Path, text: str) -> None:

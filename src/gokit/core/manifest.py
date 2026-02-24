@@ -5,10 +5,10 @@ from __future__ import annotations
 import hashlib
 import json
 import platform
+from collections.abc import Iterable
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Iterable
 
 from gokit import __version__
 

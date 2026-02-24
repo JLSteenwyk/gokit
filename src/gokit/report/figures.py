@@ -327,7 +327,7 @@ def render_semantic_network(
     )
     ax.grid(False)
 
-    for (u, v), w, a in zip(graph.edges, edge_widths, edge_alpha):
+    for (u, v), w, a in zip(graph.edges, edge_widths, edge_alpha, strict=False):
         nx.draw_networkx_edges(
             graph,
             pos,
@@ -374,11 +374,28 @@ def render_direction_summary(
     width = 0.35
 
     fig, ax = plt.subplots(figsize=(8, 5))
-    over_bars = ax.bar([i - width / 2 for i in x], over, width=width, label="over", color=c["over"])
-    under_bars = ax.bar([i + width / 2 for i in x], under, width=width, label="under", color=c["under"])
+    over_bars = ax.bar(
+        [i - width / 2 for i in x],
+        over,
+        width=width,
+        label="over",
+        color=c["over"],
+    )
+    under_bars = ax.bar(
+        [i + width / 2 for i in x],
+        under,
+        width=width,
+        label="under",
+        color=c["under"],
+    )
     ax.set_xticks(x)
     ax.set_xticklabels(namespaces)
-    ax.set_ylabel(f"Significant terms (p_adjusted <= {alpha})", color=c["text"], fontsize=11, fontweight="bold")
+    ax.set_ylabel(
+        f"Significant terms (p_adjusted <= {alpha})",
+        color=c["text"],
+        fontsize=11,
+        fontweight="bold",
+    )
     ax.set_xlabel("Namespace", color=c["text"], fontsize=11, fontweight="bold")
     _style_axes(
         ax,

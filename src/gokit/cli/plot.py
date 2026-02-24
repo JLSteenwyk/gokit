@@ -11,8 +11,8 @@ from gokit.report.figures import (
     filter_rows,
     read_enrichment_tsv,
     read_similarity_matrix,
-    render_semantic_network,
     render_direction_summary,
+    render_semantic_network,
     render_term_bar,
     resolve_output_path,
 )
@@ -29,7 +29,12 @@ def register_parser(subparsers: argparse._SubParsersAction[argparse.ArgumentPars
         choices=["term-bar", "direction-summary", "semantic-network"],
     )
     parser.add_argument("--top-n", type=int, default=20, help="Top terms to plot for term-bar")
-    parser.add_argument("--alpha", type=float, default=0.05, help="Significance threshold for summary plots")
+    parser.add_argument(
+        "--alpha",
+        type=float,
+        default=0.05,
+        help="Significance threshold for summary plots",
+    )
     parser.add_argument("--namespace", default="all", choices=["BP", "MF", "CC", "all"])
     parser.add_argument("--direction", default="both", choices=["over", "under", "both"])
     parser.add_argument("--study-id", default="", help="Optional study ID filter for batch tables")
@@ -56,7 +61,13 @@ def run(args: argparse.Namespace) -> int:
     try:
         if args.kind == "semantic-network":
             ids, pairwise = read_similarity_matrix(input_path)
-            if len(build_similarity_edges(ids, pairwise, min_similarity=args.min_similarity, max_edges=args.max_edges)) == 0:
+            has_edges = build_similarity_edges(
+                ids,
+                pairwise,
+                min_similarity=args.min_similarity,
+                max_edges=args.max_edges,
+            )
+            if len(has_edges) == 0:
                 print("No semantic edges remain after applying similarity filters.")
                 return 1
             render_semantic_network(

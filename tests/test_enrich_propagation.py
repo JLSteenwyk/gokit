@@ -85,7 +85,11 @@ def test_enrich_uses_propagation_by_default(tmp_path: Path) -> None:
     )
     assert rc == 0
 
-    rows = [json.loads(line) for line in out_prefix.with_suffix(".jsonl").read_text(encoding="utf-8").splitlines() if line.strip()]
+    rows = [
+        json.loads(line)
+        for line in out_prefix.with_suffix(".jsonl").read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
     go_ids = {r["go_id"] for r in rows}
     assert "GO:0000001" in go_ids
 
@@ -118,6 +122,10 @@ def test_enrich_can_disable_propagation(tmp_path: Path) -> None:
     )
     assert rc == 0
 
-    rows = [json.loads(line) for line in out_prefix.with_suffix(".jsonl").read_text(encoding="utf-8").splitlines() if line.strip()]
+    rows = [
+        json.loads(line)
+        for line in out_prefix.with_suffix(".jsonl").read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
     go_ids = {r["go_id"] for r in rows}
     assert "GO:0000001" not in go_ids

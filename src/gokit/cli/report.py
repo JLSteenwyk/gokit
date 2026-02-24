@@ -9,15 +9,26 @@ from pathlib import Path
 
 
 def register_parser(subparsers: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
-    parser = subparsers.add_parser("report", help="Build a consolidated markdown report for a gokit run")
+    parser = subparsers.add_parser(
+        "report",
+        help="Build a consolidated markdown report for a gokit run",
+    )
     parser.add_argument("--run", required=True, help="Run directory, output prefix, or TSV file")
-    parser.add_argument("--out", default="", help="Report markdown path (default: <run>/run_report.md)")
+    parser.add_argument(
+        "--out",
+        default="",
+        help="Report markdown path (default: <run>/run_report.md)",
+    )
     parser.add_argument("--top-n", type=int, default=10, help="Top terms to include")
     parser.set_defaults(func=run)
 
 
 def _find_manifest(run_path: Path) -> Path | None:
-    if run_path.is_file() and run_path.suffix == ".json" and run_path.name.endswith(".manifest.json"):
+    if (
+        run_path.is_file()
+        and run_path.suffix == ".json"
+        and run_path.name.endswith(".manifest.json")
+    ):
         return run_path
     if run_path.exists():
         candidate = Path(str(run_path) + ".manifest.json")
@@ -60,7 +71,10 @@ def _sort_rows(rows: list[dict[str, str]], top_n: int) -> list[dict[str, str]]:
         except ValueError:
             return 1.0
 
-    return sorted(rows, key=lambda r: (_padj(r), r.get("GO", r.get("go_id", ""))))[: max(1, top_n)]
+    return sorted(
+        rows,
+        key=lambda r: (_padj(r), r.get("GO", r.get("go_id", ""))),
+    )[: max(1, top_n)]
 
 
 def _default_out(run_path: Path) -> Path:
@@ -127,7 +141,8 @@ def run(args: argparse.Namespace) -> int:
             lines.append("|---|---|---|---:|")
             for row in top:
                 lines.append(
-                    f"| {row.get('GO','')} | {row.get('NS','')} | {row.get('direction','')} | {row.get('p_adjusted','')} |"
+                    f"| {row.get('GO','')} | {row.get('NS','')} | "
+                    f"{row.get('direction','')} | {row.get('p_adjusted','')} |"
                 )
     lines.append("")
 

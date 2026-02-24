@@ -6,7 +6,6 @@ import argparse
 from pathlib import Path
 from urllib.request import urlretrieve
 
-
 GO_BASIC_URL = "http://current.geneontology.org/ontology/go-basic.obo"
 GOSLIM_GENERIC_URL = "http://current.geneontology.org/ontology/subsets/goslim_generic.obo"
 

@@ -5,7 +5,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from math import log
 
-
 SemanticMetric = str
 
 
@@ -64,7 +63,11 @@ def _ic(goid: str, go_to_pop_count: dict[str, int], pop_n: int) -> float:
 
 
 def _mica_ic(
-    a: str, b: str, go_to_ancestors: dict[str, set[str]], go_to_pop_count: dict[str, int], pop_n: int
+    a: str,
+    b: str,
+    go_to_ancestors: dict[str, set[str]],
+    go_to_pop_count: dict[str, int],
+    pop_n: int,
 ) -> float:
     common = _anc_with_self(a, go_to_ancestors).intersection(_anc_with_self(b, go_to_ancestors))
     if not common:
@@ -73,13 +76,21 @@ def _mica_ic(
 
 
 def _resnik_term(
-    a: str, b: str, go_to_ancestors: dict[str, set[str]], go_to_pop_count: dict[str, int], pop_n: int
+    a: str,
+    b: str,
+    go_to_ancestors: dict[str, set[str]],
+    go_to_pop_count: dict[str, int],
+    pop_n: int,
 ) -> float:
     return _mica_ic(a, b, go_to_ancestors, go_to_pop_count, pop_n)
 
 
 def _lin_term(
-    a: str, b: str, go_to_ancestors: dict[str, set[str]], go_to_pop_count: dict[str, int], pop_n: int
+    a: str,
+    b: str,
+    go_to_ancestors: dict[str, set[str]],
+    go_to_pop_count: dict[str, int],
+    pop_n: int,
 ) -> float:
     mica = _mica_ic(a, b, go_to_ancestors, go_to_pop_count, pop_n)
     ia = _ic(a, go_to_pop_count, pop_n)
@@ -90,7 +101,11 @@ def _lin_term(
     return (2.0 * mica) / denom
 
 
-def _wang_sv(goid: str, go_to_parents: dict[str, set[str]], edge_weight: float = 0.8) -> dict[str, float]:
+def _wang_sv(
+    goid: str,
+    go_to_parents: dict[str, set[str]],
+    edge_weight: float = 0.8,
+) -> dict[str, float]:
     # Highest decayed contribution from term to each ancestor.
     sv: dict[str, float] = {goid: 1.0}
     stack: list[str] = [goid]
