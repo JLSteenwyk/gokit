@@ -1,0 +1,316 @@
+Advanced Usage
+==============
+
+This section describes the various features and options of gokit.
+
+- `Enrichment`_
+- `Batch Mode`_
+- `Validation`_
+- `Download`_
+- `Plotting`_
+- `Report`_
+- `Semantic Similarity`_
+- `Input File Formats`_
+- `All Options`_
+
+|
+
+.. _Enrichment:
+
+Enrichment
+----------
+
+gokit performs Gene Ontology enrichment analysis using Fisher's exact test
+for overrepresentation analysis (ORA). To run a single-study enrichment
+analysis, use the following command:
+
+.. code-block:: shell
+
+	gokit enrich \
+	  --study study.txt \
+	  --population population.txt \
+	  --assoc assoc.txt \
+	  --out results/goea
+
+Defaults that reduce flags:
+
+- ``--obo`` defaults to ``./go-basic.obo``
+- ``--assoc-format`` defaults to ``auto``
+- ``--test-direction`` defaults to ``both``
+
+|
+
+.. _`Batch Mode`:
+
+Batch Mode
+----------
+
+gokit supports batch enrichment of multiple study sets with cross-study
+semantic similarity comparisons.
+
+.. code-block:: shell
+
+	gokit enrich \
+	  --studies studies.tsv \
+	  --population population.txt \
+	  --assoc assoc.txt \
+	  --out results_batch \
+	  --out-formats tsv,jsonl \
+	  --compare-semantic \
+	  --semantic-metric wang \
+	  --semantic-top-k 5
+
+``studies.tsv`` accepts either:
+
+- ``study_name<TAB>/path/to/study.txt``
+- ``/path/to/study.txt`` (name inferred from filename)
+
+|
+
+.. _Validation:
+
+Validation
+----------
+
+Before running enrichment, it is recommended to validate your input files.
+The ``validate`` command checks that study, population, and association
+files are properly formatted and consistent.
+
+.. code-block:: shell
+
+	gokit validate \
+	  --study study.txt \
+	  --population population.txt \
+	  --assoc assoc.txt
+
+|
+
+.. _Download:
+
+Download
+--------
+
+gokit can download the Gene Ontology files needed for enrichment analysis.
+By default, this downloads ``go-basic.obo`` and ``goslim_generic.obo``
+into the current directory.
+
+.. code-block:: shell
+
+	gokit download
+
+This is equivalent to:
+
+.. code-block:: shell
+
+	wget http://current.geneontology.org/ontology/go-basic.obo
+	wget http://current.geneontology.org/ontology/subsets/goslim_generic.obo
+
+|
+
+.. _Plotting:
+
+Plotting
+--------
+
+gokit supports several plot types for visualizing enrichment results.
+
+**Term bar plot:**
+
+.. code-block:: shell
+
+	gokit plot \
+	  --input results_batch/all_studies.tsv \
+	  --study-id study_a \
+	  --kind term-bar \
+	  --direction both \
+	  --top-n 20 \
+	  --out figures/study_a_terms \
+	  --format png
+
+**Direction summary plot:**
+
+.. code-block:: shell
+
+	gokit plot \
+	  --input results_batch/all_studies.tsv \
+	  --study-id study_a \
+	  --kind direction-summary \
+	  --alpha 0.05 \
+	  --out figures/study_a_direction_summary.png
+
+**Semantic network plot:**
+
+.. code-block:: shell
+
+	gokit plot \
+	  --input results_batch/semantic_similarity.tsv \
+	  --kind semantic-network \
+	  --min-similarity 0.25 \
+	  --max-edges 40 \
+	  --out figures/semantic_network.png
+
+**Auto-plot emission from enrich:**
+
+.. code-block:: shell
+
+	gokit enrich \
+	  --studies studies.tsv \
+	  --population population.txt \
+	  --assoc assoc.txt \
+	  --out results_batch \
+	  --compare-semantic \
+	  --emit-plots term-bar,direction-summary,semantic-network \
+	  --plot-format png
+
+|
+
+.. _Report:
+
+Report
+------
+
+Generate a consolidated markdown report from an enrichment run.
+
+.. code-block:: shell
+
+	gokit report --run results/goea
+
+|
+
+.. _`Semantic Similarity`:
+
+Semantic Similarity
+-------------------
+
+gokit computes pairwise semantic similarity between study sets using
+several established metrics.
+
+Available semantic metrics (``--semantic-metric``):
+
+* ``jaccard``: Jaccard index (raw or ancestor-expanded)
+* ``resnik``: Resnik semantic similarity (information content of MICA)
+* ``lin``: Lin semantic similarity
+* ``wang``: Wang semantic similarity
+
+Additional semantic options:
+
+* ``--semantic-top-k``: number of top terms to use per study
+* ``--semantic-namespace``: restrict to a specific GO namespace (``all``, ``BP``, ``MF``, ``CC``)
+* ``--semantic-min-padjsig``: minimum adjusted p-value threshold for term inclusion
+
+|
+
+.. _`Input File Formats`:
+
+Input File Formats
+------------------
+
+gokit requires three input files for enrichment analysis:
+
+**study.txt**: one study gene ID per line.
+
+.. code-block:: text
+
+	geneA
+	geneB
+
+**population.txt**: one background gene ID per line.
+
+.. code-block:: text
+
+	geneA
+	geneB
+	geneC
+	geneD
+
+**assoc.txt**: one gene-to-GO mapping per line. Multiple GO terms on one line
+are supported using semicolons. Tabs are also accepted.
+
+.. code-block:: text
+
+	geneA GO:0008150;GO:0003674
+	geneB GO:0008150
+	geneC GO:0005575
+
+**Supported association formats:**
+
+* ``id2gos``: simple gene-to-GO ID mapping (default)
+* ``gaf``: Gene Association File format (GAF 2.x)
+* ``gpad``: Gene Product Association Data format (GPAD 1.x/2.x)
+* ``gene2go``: NCBI gene2go format
+* ``auto``: automatic format detection (default)
+
+|
+
+.. _`All Options`:
+
+All Options
+-----------
+
+**Enrichment options:**
+
+.. list-table::
+   :header-rows: 1
+   :widths: 28 72
+
+   * - Option
+     - Usage and meaning
+   * - ``-h/--help``
+     - Print help message.
+   * - ``--study``
+     - Path to study gene set file.
+   * - ``--studies``
+     - Path to batch studies manifest (TSV).
+   * - ``--population``
+     - Path to population/background gene set file.
+   * - ``--assoc``
+     - Path to gene-to-GO association file.
+   * - ``--assoc-format``
+     - Association file format. *Default: auto*.
+   * - ``--obo``
+     - Path to OBO ontology file. *Default: ./go-basic.obo*.
+   * - ``--out``
+     - Output path prefix.
+   * - ``--out-formats``
+     - Comma-separated output formats (tsv, jsonl, parquet). *Default: tsv*.
+   * - ``--method``
+     - Multiple testing correction method: ``fdr_bh``, ``fdr_by``, ``bonferroni``, ``holm``, ``none``. *Default: fdr_bh*.
+   * - ``--test-direction``
+     - Direction of test: ``both``, ``over``, ``under``. *Default: both*.
+   * - ``--id-type``
+     - ID normalization mode: ``auto``, ``str``, ``int``. *Default: auto*.
+   * - ``--compare-semantic``
+     - Enable cross-study semantic similarity comparison. *Default: off*.
+   * - ``--semantic-metric``
+     - Semantic similarity metric: ``jaccard``, ``resnik``, ``lin``, ``wang``. *Default: jaccard*.
+   * - ``--semantic-top-k``
+     - Number of top terms per study for semantic comparison.
+   * - ``--semantic-namespace``
+     - GO namespace filter for semantic comparison: ``all``, ``BP``, ``MF``, ``CC``.
+   * - ``--semantic-min-padjsig``
+     - Minimum adjusted p-value threshold for semantic term inclusion.
+   * - ``--emit-plots``
+     - Comma-separated plot types to auto-emit: ``term-bar``, ``direction-summary``, ``semantic-network``.
+   * - ``--plot-format``
+     - Format for auto-emitted plots. *Default: png*.
+
+**Command aliases:**
+
+.. list-table::
+   :header-rows: 1
+   :widths: 28 72
+
+   * - Alias
+     - Equivalent command
+   * - ``gk_enrich``
+     - ``gokit enrich``
+   * - ``gk_validate``
+     - ``gokit validate``
+   * - ``gk_plot``
+     - ``gokit plot``
+   * - ``gk_download``
+     - ``gokit download``
+   * - ``gk_report``
+     - ``gokit report``
+   * - ``gk_explain``
+     - ``gokit explain``
