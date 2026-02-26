@@ -1,0 +1,104 @@
+gokit
+=====
+
+^^^^^
+
+
+gokit is a command-line toolkit for Gene Ontology (GO) enrichment analysis.
+
+
+Quick Start
+-----------
+These lines represent the simplest method to rapidly install and run gokit.
+
+.. code-block:: shell
+
+	# install
+	pip install gokit
+
+	# download default ontology files into current directory
+	gokit download
+
+	# run enrichment
+	gokit enrich \
+	  --study study.txt \
+	  --population population.txt \
+	  --assoc assoc.txt \
+	  --out results/goea
+
+Below are more detailed instructions, including alternative installation methods.
+
+**1) Installation**
+
+To help ensure gokit can be installed using your favorite workflow, we have made gokit available from pip and source.
+
+**Install from pip**
+
+To install from pip, use the following commands:
+
+.. code-block:: shell
+
+	# create virtual environment
+	python -m venv venv
+	# activate virtual environment
+	source venv/bin/activate
+	# install gokit
+	pip install gokit
+
+**Note: the virtual environment must be activated to use gokit.**
+
+|
+
+**Install from source**
+
+Similarly, to install from source, we strongly recommend using a virtual environment. To do so, use the following commands:
+
+.. code-block:: shell
+
+	# download
+	git clone https://github.com/JLSteenwyk/gokit.git
+	cd gokit/
+	# create virtual environment
+	python -m venv venv
+	# activate virtual environment
+	source venv/bin/activate
+	# install
+	pip install -e .[dev,plot]
+
+To deactivate your virtual environment, use the following command:
+
+.. code-block:: shell
+
+	# deactivate virtual environment
+	deactivate
+
+**Note: the virtual environment must be activated to use gokit.**
+
+|
+
+**2) Usage**
+
+To use gokit, execute the following command:
+
+.. code-block:: shell
+
+	gokit enrich \
+	  --study study.txt \
+	  --population population.txt \
+	  --assoc assoc.txt \
+	  --out results/goea
+
+|
+
+^^^^
+
+.. toctree::
+	:maxdepth: 4
+
+	about/index
+	advanced/index
+	change_log/index
+	other_software/index
+	frequently_asked_questions/index
+
+^^^^
