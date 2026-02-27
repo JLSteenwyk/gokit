@@ -18,7 +18,7 @@
       <img src="https://img.shields.io/badge/Bluesky-0285FF?logo=bluesky&logoColor=fff" alt="Bluesky">
     </a>
     <a href="https://pypi.org/project/gokit/">
-      <img src="https://img.shields.io/pypi/pyversions/gokit" alt="Python Versions">
+      <img src="https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=fff" alt="Python Versions">
     </a>
     <a href="https://lbesson.mit-license.org/">
       <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License">
