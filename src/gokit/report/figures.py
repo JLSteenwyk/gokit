@@ -268,6 +268,13 @@ def render_term_bar(
     # Add value labels for rapid scan in announcement-style visuals.
     for yi, val in enumerate(values):
         ax.text(val + 0.03, yi, f"{val:.2f}", va="center", ha="left", fontsize=9, color=c["label"])
+    from matplotlib.patches import Patch
+
+    handles = [
+        Patch(color=c["over"], label="Over-enriched"),
+        Patch(color=c["under"], label="Under-enriched"),
+    ]
+    ax.legend(handles=handles, frameon=False, loc="lower right", fontsize=9)
     fig.tight_layout()
     out.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(out, dpi=200, bbox_inches="tight")
