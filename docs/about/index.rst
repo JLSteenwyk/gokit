@@ -12,7 +12,7 @@ It provides overrepresentation analysis (ORA) using Fisher's exact test
 and supports semantic similarity comparisons for GO terms across
 single or batch study scenarios.
 
-gokit is designed with zero core dependencies for maximum portability,
+gokit ships plotting support as a core feature (matplotlib, pypubfigs, and networkx)
 and supports multiple association file formats including id2gos, GAF,
 GPAD, and NCBI gene2go with automatic format detection.
 

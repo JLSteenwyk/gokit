@@ -158,8 +158,7 @@ def _require_matplotlib():
         import matplotlib.pyplot as plt
     except Exception as exc:  # pragma: no cover - environment dependent
         raise RuntimeError(
-            "Figure generation requires optional dependency 'matplotlib'. "
-            "Install with: pip install 'gokit[plot]'"
+            "Figure generation requires matplotlib to be installed."
         ) from exc
     return plt
 
@@ -169,8 +168,7 @@ def _require_networkx():
         import networkx as nx
     except Exception as exc:  # pragma: no cover - environment dependent
         raise RuntimeError(
-            "Semantic network plotting requires optional dependency 'networkx'. "
-            "Install with: pip install 'gokit[plot]'"
+            "Semantic network plotting requires networkx to be installed."
         ) from exc
     return nx
 

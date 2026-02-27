@@ -40,9 +40,9 @@ Wang similarity for comparing GO term sets across studies.
 
 **Does gokit have any dependencies?**
 
-gokit is designed with zero core dependencies for maximum portability.
-Optional extras include ``pyarrow`` for Parquet output (``pip install gokit[io]``)
-and ``matplotlib``/``networkx`` for plotting (``pip install gokit[plot]``).
+gokit includes core plotting dependencies (``matplotlib``, ``pypubfigs``,
+and ``networkx``) so plotting works out of the box. Optional extras include
+``pyarrow`` for Parquet output (``pip install gokit[io]``).
 
 |
 
