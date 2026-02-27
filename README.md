@@ -14,6 +14,9 @@
     <a href="https://github.com/JLSteenwyk/gokit/actions/workflows/ci.yml">
       <img src="https://img.shields.io/github/actions/workflow/status/JLSteenwyk/gokit/ci.yml?branch=main" alt="CI">
     </a>
+    <a href="https://bsky.app/profile/jlsteenwyk.bsky.social" target="_blank" rel="noopener noreferrer">
+      <img src="https://img.shields.io/badge/Bluesky-0285FF?logo=bluesky&logoColor=fff" alt="Bluesky">
+    </a>
     <a href="https://pypi.org/project/gokit/">
       <img src="https://img.shields.io/pypi/pyversions/gokit" alt="Python Versions">
     </a>

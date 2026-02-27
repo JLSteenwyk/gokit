@@ -6,6 +6,14 @@ Change log
 
 Major changes to gokit are summarized here.
 
+**0.1.3**
+Release focused on plotting and documentation polish:
+
+- Plotting dependencies promoted to core package dependencies
+- Realistic multi-study example datasets and figure outputs added
+- Documentation and README updated with larger generated figure galleries
+- Term-bar plots now include a bottom-right direction legend
+
 **0.1.2**
 Current release with full feature set including:
 
