@@ -7,7 +7,7 @@ name = "gokit"
 version = "0.1.5"
 description = "Command-line toolkit for GO enrichment analysis"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.10"
 license = {text = "MIT"}
 authors = [
   {name = "Jacob L. Steenwyk", email = "jlsteenwyk@gmail.com"}
@@ -16,6 +16,7 @@ classifiers = [
   "Operating System :: OS Independent",
   "Intended Audience :: Science/Research",
   "Programming Language :: Python",
+  "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
