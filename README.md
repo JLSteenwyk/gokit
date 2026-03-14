@@ -18,6 +18,9 @@
       <img src="https://img.shields.io/badge/Bluesky-0285FF?logo=bluesky&logoColor=fff" alt="Bluesky">
     </a>
     <a href="https://pypi.org/project/gokit/">
+      <img src="https://img.shields.io/pypi/v/gokit" alt="PyPI">
+    </a>
+    <a href="https://pypi.org/project/gokit/">
       <img src="https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=fff" alt="Python Versions">
     </a>
     <a href="https://lbesson.mit-license.org/">
@@ -33,8 +36,8 @@ This README covers quick setup and core usage. For release process details, see 
 ## Quick Start
 
 ```bash
-# install
-pip install -e .[dev]
+# install from PyPI
+pip install gokit
 
 # download default ontology files into current directory
 gokit download
@@ -86,12 +89,10 @@ geneC GO:0005575
 
 ## Installation
 
-We recommend using a virtual environment.
+Install from [PyPI](https://pypi.org/project/gokit/):
 
 ```bash
-python -m venv venv
-source venv/bin/activate
-pip install -e .[dev]
+pip install gokit
 ```
 
 To install from source:
@@ -99,8 +100,6 @@ To install from source:
 ```bash
 git clone https://github.com/JLSteenwyk/gokit.git
 cd gokit
-python -m venv venv
-source venv/bin/activate
 pip install -e .[dev]
 ```
 
