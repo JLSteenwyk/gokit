@@ -21,7 +21,7 @@
       <img src="https://img.shields.io/pypi/v/gokit" alt="PyPI">
     </a>
     <a href="https://pypi.org/project/gokit/">
-      <img src="https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=fff" alt="Python Versions">
+      <img src="https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=fff" alt="Python Versions">
     </a>
     <a href="https://lbesson.mit-license.org/">
       <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License">
